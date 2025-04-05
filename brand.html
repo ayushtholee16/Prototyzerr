@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOTYZER Brand Kit Maker</title>
+    <link rel="icon" type="image/jpeg" href="../Assets/logo.jpg">
+    <!-- Include required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c7;
+            --secondary: #a66efa;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --bg: #f8f9ff;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.12);
+            --hover: rgba(108, 92, 231, 0.08);
+            --user-bubble: linear-gradient(135deg, var(--primary), var(--secondary));
+            --bot-bubble: var(--card-bg);
+            --typing-indicator: #dfe6e9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --error: #d63031;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Styles */
+        .brand-form {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--hover);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: var(--card-bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+            outline: none;
+        }
+
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.3rem 0;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        /* Color Picker Styles */
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .color-option {
+            height: 60px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-option:hover {
+            transform: translateY(-3px);
+        }
+
+        .color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Preview Sections */
+        .preview-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin: 2rem 0;
+        }
+
+        .logo-preview {
+            font-size: 2.5rem;
+            padding: 2rem;
+            border: 2px dashed var(--hover);
+            text-align: center;
+            margin: 1rem 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.2);
+        }
+
+        /* Tone of Voice Section */
+        .tone-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tone-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .tone-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Social Preview */
+        .social-preview {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--hover);
+            color: var(--primary);
+            box-shadow: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--hover);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Logo Generator */
+        .logo-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .logo-option {
+            padding: 1rem;
+            border: 2px solid var(--hover);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logo-option:hover {
+            border-color: var(--primary);
+        }
+
+        .logo-option.selected {
+            border-color: var(--primary);
+            background: var(--hover);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Color Generator */
+        .color-generator {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .color-input {
+            flex: 1;
+        }
+
+        /* Brand Assets */
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .asset-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .asset-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--hover);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 1000;
+        }
+
+        /* Business Card */
+        .business-card {
+            width: 350px;
+            height: 200px;
+            background: white;
+            border-radius: 12px;
+            margin: 1rem auto;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .business-card-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .bc-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .bc-title {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .bc-contact {
+            margin-top: auto;
+            font-size: 0.8rem;
+        }
+
+        /* Logo Canvas */
+        .logo-canvas {
+            display: none;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: var(--hover);
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Tag Styles */
+        .tag {
+            display: inline-block;
+            background: var(--hover);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tag.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .brand-form {
+                padding: 1rem;
+            }
+            
+            .color-palette {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .business-card {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1.75;
+            }
+
+            .logo-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tone-section {
+                grid-template-columns: 1fr;
+            }
+
+            .logo-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PROTOTYZER – Ultimate Brand Kit Generator</h1>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <div class="tab active" data-tab="brand-info">Brand Info</div>
+            <div class="tab" data-tab="visual-identity">Visual Identity</div>
+            <div class="tab" data-tab="brand-voice">Brand Voice</div>
+            <div class="tab" data-tab="assets">Brand Assets</div>
+        </div>
+
+        <!-- Brand Input Form -->
+        <div class="brand-form">
+            <!-- Brand Info Tab -->
+            <div class="tab-content active" id="brand-info">
+                <div class="form-section">
+                    <label for="businessName">Business Name *</label>
+                    <input type="text" id="businessName" required placeholder="Your awesome brand name">
+                </div>
+
+                <div class="form-section">
+                    <label for="businessDesc">Business Description</label>
+                    <textarea id="businessDesc" rows="3" placeholder="What does your business do?"></textarea>
+                </div>
+
+                <div class="form-section">
+                    <label for="industry">Industry *</label>
+                    <select id="industry" required>
+                        <option value="">Select your industry</option>
+                        <option value="food">Food & Beverage</option>
+                        <option value="tech">Technology</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="health">Health & Wellness</option>
+                        <option value="finance">Finance</option>
+                        <option value="education">Education</option>
+                        <option value="creative">Creative Services</option>
+                        <option value="retail">Retail</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label for="targetAudience">Target Audience</label>
+                    <input type="text" id="targetAudience" placeholder="Who are your ideal customers?">
+                </div>
+
+                <div class="form-section">
+                    <label for="brandValues">Brand Values (Select up to 3)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Innovation"> Innovation
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Quality"> Quality
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Sustainability"> Sustainability
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Community"> Community
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Luxury"> Luxury
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Affordability"> Affordability
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Fun"> Fun
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brandValues" value="Reliability"> Reliability
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label for="businessEmail">Business Email</label>
+                    <input type="email" id="businessEmail" placeholder="contact@yourbusiness.com">
+                </div>
+
+                <div class="form-section">
+                    <label for="businessPhone">Business Phone</label>
+                    <input type="tel" id="businessPhone" placeholder="+1 (123) 456-7890">
+                </div>
+
+                <div class="form-section">
+                    <label for="businessWebsite">Business Website</label>
+                    <input type="url" id="businessWebsite" placeholder="https://yourbusiness.com">
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn" data-next-tab="visual-identity">Next: Visual Identity <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Visual Identity Tab -->
+            <div class="tab-content" id="visual-identity">
+                <h3>Logo Generation</h3>
+                <div class="form-section">
+                    <label>Logo Style Preference</label>
+                    <div class="logo-options">
+                        <div class="logo-option" data-logo-style="modern">
+                            <i class="fas fa-sync-alt logo-icon"></i>
+                            Modern
+                        </div>
+                        <div class="logo-option" data-logo-style="classic">
+                            <i class="fas fa-landmark logo-icon"></i>
+                            Classic
+                        </div>
+                        <div class="logo-option" data-logo-style="minimal">
+                            <i class="fas fa-square logo-icon"></i>
+                            Minimal
+                        </div>
+                        <div class="logo-option" data-logo-style="handmade">
+                            <i class="fas fa-pen-fancy logo-icon"></i>
+                            Handmade
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label>Logo Preview</label>
+                    <div class="logo-preview" id="logoPreview">
+                        Your Logo Here
+                    </div>
+                    <canvas id="logoCanvas" class="logo-canvas"></canvas>
+                </div>
+
+                <div class="form-section">
+                    <label>Logo Color</label>
+                    <input type="color" id="logoColor" value="#6c5ce7">
+                </div>
+
+                <div class="form-section">
+                    <label>Logo Background</label>
+                    <input type="color" id="logoBgColor" value="#ffffff">
+                </div>
+
+                <div class="form-section">
+                    <button class="btn btn-secondary" id="downloadLogoBtn"><i class="fas fa-download"></i> Download Logo</button>
+                </div>
+
+                <h3>Color Palette</h3>
+                <div class="form-section">
+                    <label>Primary Color</label>
+                    <input type="color" id="primaryColor" value="#6c5ce7">
+                </div>
+
+                <div class="form-section">
+                    <label>Secondary Color</label>
+                    <input type="color" id="secondaryColor" value="#a66efa">
+                </div>
+
+                <div class="form-section">
+                    <label>Suggested Color Palettes</label>
+                    <div class="color-palette">
+                        <div class="color-option" style="background: #6c5ce7;">#6C5CE7</div>
+                        <div class="color-option" style="background: #a66efa;">#A66EFA</div>
+                        <div class="color-option" style="background: #00cec9;">#00CEC9</div>
+                        <div class="color-option" style="background: #0984e3;">#0984E3</div>
+                        <div class="color-option" style="background: #fd79a8;">#FD79A8</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <button class="btn btn-secondary" id="downloadPaletteBtn"><i class="fas fa-download"></i> Download Palette</button>
+                </div>
+
+                <h3>Typography</h3>
+                <div class="form-section">
+                    <label>Primary Font</label>
+                    <select id="primaryFont">
+                        <option value="Poppins">Poppins (Modern)</option>
+                        <option value="Roboto">Roboto (Neutral)</option>
+                        <option value="Playfair Display">Playfair Display (Elegant)</option>
+                        <option value="Montserrat">Montserrat (Clean)</option>
+                        <option value="Lato">Lato (Friendly)</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label>Secondary Font</label>
+                    <select id="secondaryFont">
+                        <option value="Poppins">Poppins</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Lato">Lato</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <button class="btn btn-secondary" id="downloadFontsBtn"><i class="fas fa-download"></i> Download Font Guide</button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" data-prev-tab="brand-info"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button class="btn" data-next-tab="brand-voice">Next: Brand Voice <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Brand Voice Tab -->
+            <div class="tab-content" id="brand-voice">
+                <div class="form-section">
+                    <label for="tone">Tone of Voice *</label>
+                    <select id="tone" required>
+                        <option value="">Select your brand voice</option>
+                        <option value="professional">Professional</option>
+                        <option value="playful">Playful</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="bold">Bold</option>
+                        <option value="friendly">Friendly</option>
+                        <option value="authoritative">Authoritative</option>
+                        <option value="quirky">Quirky</option>
+                    </select>
+                </div>
+
+                <!-- Tone of Voice Preview -->
+                <div class="preview-section" id="tonePreview"></div>
+
+                <div class="form-section">
+                    <label>Brand Personality Adjectives</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                        <span class="tag" data-tag="sophisticated">Sophisticated</span>
+                        <span class="tag" data-tag="innovative">Innovative</span>
+                        <span class="tag" data-tag="reliable">Reliable</span>
+                        <span class="tag" data-tag="fun">Fun</span>
+                        <span class="tag" data-tag="bold">Bold</span>
+                        <span class="tag" data-tag="friendly">Friendly</span>
+                        <span class="tag" data-tag="luxurious">Luxurious</span>
+                        <span class="tag" data-tag="minimalist">Minimalist</span>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label for="brandKeywords">Brand Keywords (3-5 words that define your brand)</label>
+                    <input type="text" id="brandKeywords" placeholder="e.g., Innovative, Trustworthy, Cutting-edge">
+                </div>
+
+                <!-- Social Preview -->
+                <div class="preview-section">
+                    <h3>Social Starter Kit Preview</h3>
+                    <div id="socialPreview" class="social-preview"></div>
+                </div>
+
+                <div class="form-section">
+                    <button class="btn btn-secondary" id="downloadVoiceGuideBtn"><i class="fas fa-download"></i> Download Voice Guide</button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" data-prev-tab="visual-identity"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button class="btn" data-next-tab="assets">Next: Brand Assets <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Brand Assets Tab -->
+            <div class="tab-content" id="assets">
+                <h3>Your Brand Assets</h3>
+                <p>Based on your inputs, we've generated these brand assets for you:</p>
+                
+                <div class="asset-grid">
+                    <div class="asset-card">
+                        <div class="asset-icon"><i class="fas fa-image"></i></div>
+                        <h4>Logo Pack</h4>
+                        <p>PNG, SVG, and transparent versions</p>
+                        <button class="btn download-asset-btn" data-asset="logo" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem;"><i class="fas fa-download"></i> Download</button>
+                    </div>
+                    <div class="asset-card">
+                        <div class="asset-icon"><i class="fas fa-palette"></i></div>
+                        <h4>Color Palette</h4>
+                        <p>HEX, RGB, and CMYK values</p>
+                        <button class="btn download-asset-btn" data-asset="palette" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem;"><i class="fas fa-download"></i> Download</button>
+                    </div>
+                    <div class="asset-card">
+                        <div class="asset-icon"><i class="fas fa-book"></i></div>
+                        <h4>Brand Guidelines</h4>
+                        <p>Complete usage instructions</p>
+                        <button class="btn download-asset-btn" data-asset="guidelines" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem;"><i class="fas fa-download"></i> Download</button>
+                    </div>
+                    <div class="asset-card">
+                        <div class="asset-icon"><i class="fas fa-share-alt"></i></div>
+                        <h4>Social Media Kit</h4>
+                        <p>Posts, banners, and templates</p>
+                        <button class="btn download-asset-btn" data-asset="social" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem;"><i class="fas fa-download"></i> Download</button>
+                    </div>
+                </div>
+
+                <div class="preview-section" style="margin-top: 2rem;">
+                    <h3>Business Card Preview</h3>
+                    <div class="business-card" id="businessCardPreview">
+                        <div class="business-card-content" id="businessCardContent">
+                            <div class="bc-name" id="bcName">Your Business</div>
+                            <div class="bc-title" id="bcTitle">Your Title</div>
+                            <div class="bc-contact">
+                                <div id="bcPhone">+1 (123) 456-7890</div>
+                                <div id="bcEmail">hello@yourbusiness.com</div>
+                                <div id="bcWebsite">www.yourbusiness.com</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="downloadBusinessCardBtn" style="margin-top: 1rem;"><i class="fas fa-download"></i> Download Business Card</button>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Email Signature Preview</h3>
+                    <div id="emailSignaturePreview" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); margin: 1rem 0;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div id="emailSigLogo" style="width: 50px; height: 50px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 4px;">YB</div>
+                            <div>
+                                <div style="font-weight: bold;" id="emailSigName">Your Name</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;" id="emailSigTitle">Your Title</div>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid var(--hover); padding-top: 1rem; font-size: 0.8rem;">
+                            <div id="emailSigCompany" style="font-weight: bold; color: var(--primary);">Your Business</div>
+                            <div id="emailSigContact" style="margin-top: 0.5rem;">
+                                <span id="emailSigPhone">P: +1 (123) 456-7890</span> | 
+                                <span id="emailSigEmail">E: hello@yourbusiness.com</span> | 
+                                <span id="emailSigWeb">W: www.yourbusiness.com</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="downloadEmailSigBtn" style="margin-top: 1rem;"><i class="fas fa-download"></i> Download Email Signature</button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" data-prev-tab="brand-voice"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button class="btn" id="generateBrandKitBtn"><i class="fas fa-file-archive"></i> Generate Full Brand Kit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Animation -->
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>Generating your amazing brand kit...</p>
+        </div>
+
+        <!-- Notification -->
+        <div class="notification" id="notification">
+            Brand kit generated successfully! <a href="#" id="downloadLink" style="color: white; text-decoration: underline;">Download now</a>
+        </div>
+    </div>
+
+    <script>
+        // Initialize JSPDF
+        const { jsPDF } = window.jspdf;
+        
+        // Enhanced Tone of Voice Configuration
+        const toneConfig = {
+            professional: {
+                description: "Formal and polished communication style ideal for corporate businesses and professional services.",
+                dos: ["Use complete sentences", "Maintain proper grammar", "Be clear and concise", "Use industry terminology appropriately"],
+                donts: ["Slang terms", "Emojis in formal communications", "Colloquial expressions", "Overly casual language"],
+                examples: [
+                    "We are pleased to announce our new service offering effective immediately...",
+                    "Our organization prioritizes excellence in client service and professional development...",
+                    "Please find attached the requested documentation for your review at your earliest convenience."
+                ],
+                socialTone: "Professional and polished",
+                writingStyle: "Concise, factual, and structured"
+            },
+            playful: {
+                description: "Casual and energetic communication style perfect for lifestyle brands and creative businesses.",
+                dos: ["Use emojis to add personality", "Be conversational and friendly", "Show your brand's unique personality", "Use humor when appropriate"],
+                donts: ["Overly formal language", "Technical jargon without explanation", "Long paragraphs without breaks", "Taking yourself too seriously"],
+                examples: [
+                    "Hey there! Check out our new collection - it's amazing!",
+                    "Ready for some fun? Our biggest sale starts NOW! Don't miss out!",
+                    "Puppies + our new product line = your new happy place"
+                ],
+                socialTone: "Fun and engaging",
+                writingStyle: "Conversational with personality"
+            },
+            luxury: {
+                description: "Sophisticated and elegant tone for high-end brands and premium products.",
+                dos: ["Use premium vocabulary (exquisite, crafted, bespoke)", "Create a sense of exclusivity", "Focus on quality and craftsmanship", "Evoke emotion and desire"],
+                donts: ["Casual language", "Direct price mentions (use 'investment' instead)", "Mass-market terminology", "Overuse of exclamation points"],
+                examples: [
+                    "Experience unparalleled elegance with our exclusive collection...",
+                    "Discover the art of fine craftsmanship with our limited edition pieces...",
+                    "Indulge in the extraordinary with our meticulously designed offerings..."
+                ],
+                socialTone: "Elegant and aspirational",
+                writingStyle: "Descriptive and evocative"
+            },
+            bold: {
+                description: "Strong and impactful communication for brands wanting to make a statement.",
+                dos: ["Use power words (disrupt, transform, revolutionize)", "Keep sentences short and impactful", "Create urgency when appropriate", "Take clear stances"],
+                donts: ["Hesitant language (maybe, perhaps, possibly)", "Passive voice", "Vague statements", "Excessive qualifiers"],
+                examples: [
+                    "BREAKING: Game-changing innovation revealed today. Industry will never be the same.",
+                    "Don't settle for mediocre. Demand better. We did.",
+                    "Limited stock. Extreme demand. Act now or regret later."
+                ],
+                socialTone: "Confident and direct",
+                writingStyle: "Bold and concise"
+            },
+            friendly: {
+                description: "Warm and approachable tone that builds trust and connection.",
+                dos: ["Use 'we' and 'you' to feel conversational", "Show empathy and understanding", "Keep language simple and clear", "Be helpful and supportive"],
+                donts: ["Corporate jargon", "Overly salesy language", "Complex terminology", "Impersonal statements"],
+                examples: [
+                    "We're here to help you find exactly what you need!",
+                    "You've got questions? We've got answers - just ask!",
+                    "We know life gets busy - that's why we made this simple for you."
+                ],
+                socialTone: "Approachable and helpful",
+                writingStyle: "Warm and clear"
+            },
+            authoritative: {
+                description: "Expert and knowledgeable tone that establishes credibility.",
+                dos: ["Cite facts and statistics", "Use industry terminology correctly", "Provide clear evidence", "Offer actionable insights"],
+                donts: ["Unsubstantiated claims", "Overpromising", "Vague statements", "Opinions presented as facts"],
+                examples: [
+                    "Research shows that 83% of businesses see improvement within 30 days of implementation.",
+                    "Our methodology, developed over 15 years of research, delivers proven results.",
+                    "Based on clinical trials, our formula demonstrates 97% efficacy."
+                ],
+                socialTone: "Knowledgeable and trustworthy",
+                writingStyle: "Evidence-based and precise"
+            },
+            quirky: {
+                description: "Unique and unconventional tone that stands out from competitors.",
+                dos: ["Embrace unusual metaphors", "Create memorable phrases", "Show personality boldly", "Break conventions when it fits"],
+                donts: ["Corporate clichés", "Taking yourself too seriously", "Being weird just for the sake of it", "Confusing your audience"],
+                examples: [
+                    "Our product is like a unicorn riding a rainbow - magical and impossible to ignore.",
+                    "Warning: Side effects may include spontaneous dancing and excessive happiness.",
+                    "We're not like other brands. And we're totally okay with that."
+                ],
+                socialTone: "Memorable and distinctive",
+                writingStyle: "Creative and unconventional"
+            }
+        };
+
+        // Enhanced Social Content Generator
+        const socialContent = {
+            professional: {
+                bios: [
+                    "Innovative solutions for modern businesses | Partnering with industry leaders since 2015",
+                    "Leading the way in professional services | Excellence in every engagement",
+                    "Your trusted partner in business transformation | Delivering measurable results"
+                ],
+                hashtags: ["#BusinessExcellence", "#ProfessionalServices", "#IndustryLeaders", "#CorporateSolutions"],
+                postIdeas: [
+                    "Industry insights: The top 3 trends shaping our sector in 2023",
+                    "Case study: How we helped [Client] achieve 45% growth in 6 months",
+                    "Meet our team: Spotlight on [Name], our [Position] with 10+ years experience"
+                ]
+            },
+            playful: {
+                bios: [
+                    "Bringing fun to everyday life! | Making the ordinary extraordinary since 2010",
+                    "Your daily dose of happiness | Spreading joy one product at a time",
+                    "Life's more fun with us! | Tag us in your adventures #BrandName"
+                ],
+                hashtags: ["#LiveLaughLove", "#GoodVibesOnly", "#StayPlayful", "#FunTimes"],
+                postIdeas: [
+                    "Which product are you today? Tag a friend who needs this energy!",
+                    "Behind the scenes: This is how much fun we have making your favorites!",
+                    "GIVEAWAY TIME! Like, tag 3 friends, and follow to enter"
+                ]
+            },
+            luxury: {
+                bios: [
+                    "Crafting timeless elegance | Bespoke creations since 1985",
+                    "Where luxury meets legacy | The art of exquisite craftsmanship",
+                    "Experience the extraordinary | Curated collections for the discerning"
+                ],
+                hashtags: ["#LuxuryLiving", "#EleganceRedefined", "#PremiumQuality", "#Bespoke"],
+                postIdeas: [
+                    "The making of: A 3-month journey to create one of our signature pieces",
+                    "An exclusive first look at our upcoming collection (available to VIP clients first)",
+                    "The BrandName lifestyle: How our clients incorporate our pieces into their world"
+                ]
+            },
+            bold: {
+                bios: [
+                    "Changing the game. Every. Single. Day. | Established 2012",
+                    "Bold moves only | No apologies for being the best",
+                    "Not for the faint-hearted | Are you ready to level up?"
+                ],
+                hashtags: ["#BoldAndBrave", "#GameChanger", "#NoCompromises", "#Disruptor"],
+                postIdeas: [
+                    "FACT: Our competitors wish they had this feature. But they don't. We do.",
+                    "The status quo sucks. Here's how we're fixing it.",
+                    "You've been doing it wrong. Here's the right way (hint: it involves us)"
+                ]
+            },
+            friendly: {
+                bios: [
+                    "Your neighborhood experts! | Serving the community since 2008",
+                    "We make service easy and stress-free | Because life's complicated enough",
+                    "Real people helping real people | Stop by and say hello!"
+                ],
+                hashtags: ["#CommunityFirst", "#FriendlyService", "#LocalBusiness", "#HereToHelp"],
+                postIdeas: [
+                    "FAQ Friday: Answering your most common questions about topic",
+                    "Meet the team! We're real people who care about your experience",
+                    "Customer spotlight: Why Customer has been with us for 5+ years"
+                ]
+            },
+            authoritative: {
+                bios: [
+                    "Evidence-based solutions | Backed by 15 years of research",
+                    "The science behind product | Clinically proven results",
+                    "Industry-leading expertise | Trusted by professionals worldwide"
+                ],
+                hashtags: ["#EvidenceBased", "#ResearchDriven", "#ExpertApproved", "#ScienceBacked"],
+                postIdeas: [
+                    "New study reveals: 78% of target experience this common problem",
+                    "White paper available: Our complete findings on industry topic",
+                    "Debunking myths: The truth about common misconception"
+                ]
+            },
+            quirky: {
+                bios: [
+                    "Weird in the best way possible | Proudly unconventional since 2015",
+                    "Product for people who don't follow rules | Color outside the lines with us",
+                    "Normal is boring. Be extraordinary. | Join the revolution"
+                ],
+                hashtags: ["#EmbraceTheWeird", "#Unconventional", "#NotYourAverageBrand", "#ThinkDifferent"],
+                postIdeas: [
+                    "Our product development process looks something like this (yes, really)",
+                    "We asked our team to describe product in 3 words. The results were... interesting.",
+                    "Which product personality are you? Take our weirdly accurate quiz to find out!"
+                ]
+            }
+        };
+
+        // Business Card Templates
+        const businessCardTemplates = {
+            professional: {
+                bgColor: "#ffffff",
+                textColor: "#2d3436",
+                accentColor: "#6c5ce7",
+                layout: "minimal"
+            },
+            playful: {
+                bgColor: "#f8f9ff",
+                textColor: "#2d3436",
+                accentColor: "#a66efa",
+                layout: "modern"
+            },
+            luxury: {
+                bgColor: "#2d3436",
+                textColor: "#ffffff",
+                accentColor: "#fdcb6e",
+                layout: "elegant"
+            },
+            bold: {
+                bgColor: "#000000",
+                textColor: "#ffffff",
+                accentColor: "#ff0000",
+                layout: "bold"
+            },
+            friendly: {
+                bgColor: "#ffffff",
+                textColor: "#2d3436",
+                accentColor: "#00cec9",
+                layout: "clean"
+            },
+            authoritative: {
+                bgColor: "#ffffff",
+                textColor: "#2d3436",
+                accentColor: "#0984e3",
+                layout: "professional"
+            },
+            quirky: {
+                bgColor: "#ffffff",
+                textColor: "#2d3436",
+                accentColor: "#fd79a8",
+                layout: "creative"
+            }
+        };
+
+        // Tab Navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+                
+                // Update progress bar
+                updateProgressBar();
+            });
+        });
+
+        // Next/Back Button Navigation
+        document.querySelectorAll('[data-next-tab], [data-prev-tab]').forEach(button => {
+            button.addEventListener('click', () => {
+                const currentTab = button.closest('.tab-content');
+                const nextTabId = button.getAttribute('data-next-tab') || button.getAttribute('data-prev-tab');
+                
+                // Remove active class from current tab and content
+                document.querySelector(`.tab[data-tab="${currentTab.id}"]`).classList.remove('active');
+                currentTab.classList.remove('active');
+                
+                // Add active class to next tab and content
+                document.querySelector(`.tab[data-tab="${nextTabId}"]`).classList.add('active');
+                document.getElementById(nextTabId).classList.add('active');
+                
+                // Update progress bar
+                updateProgressBar();
+            });
+        });
+
+        // Update progress bar based on current tab
+        function updateProgressBar() {
+            const tabs = document.querySelectorAll('.tab');
+            const activeTab = document.querySelector('.tab.active');
+            const activeIndex = Array.from(tabs).indexOf(activeTab);
+            const progress = ((activeIndex + 1) / tabs.length) * 100;
+            
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        // Logo Style Selection
+        document.querySelectorAll('.logo-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.logo-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                
+                // Update logo preview
+                updateLogoPreview();
+            });
+        });
+
+        // Update logo preview
+        function updateLogoPreview() {
+            const businessName = document.getElementById('businessName').value || 'Your Business';
+            const logoStyle = document.querySelector('.logo-option.selected')?.getAttribute('data-logo-style') || 'modern';
+            const logoColor = document.getElementById('logoColor').value;
+            const logoBgColor = document.getElementById('logoBgColor').value;
+            
+            const logoPreview = document.getElementById('logoPreview');
+            logoPreview.textContent = businessName;
+            logoPreview.style.color = logoColor;
+            logoPreview.style.backgroundColor = logoBgColor;
+            
+            // Apply different styles based on logo style
+            switch(logoStyle) {
+                case 'modern':
+                    logoPreview.style.fontWeight = '700';
+                    logoPreview.style.fontStyle = 'italic';
+                    break;
+                case 'classic':
+                    logoPreview.style.fontFamily = "'Times New Roman', serif";
+                    logoPreview.style.fontWeight = 'bold';
+                    break;
+                case 'minimal':
+                    logoPreview.style.fontWeight = '300';
+                    logoPreview.style.letterSpacing = '2px';
+                    break;
+                case 'handmade':
+                    logoPreview.style.fontFamily = "'Comic Sans MS', cursive";
+                    logoPreview.style.fontWeight = 'bold';
+                    break;
+                default:
+                    logoPreview.style.fontWeight = '600';
+            }
+            
+            // Update canvas for download
+            updateLogoCanvas();
+        }
+
+        // Update logo canvas for download
+        function updateLogoCanvas() {
+            const canvas = document.getElementById('logoCanvas');
+            const ctx = canvas.getContext('2d');
+            const logoPreview = document.getElementById('logoPreview');
+            
+            // Set canvas dimensions
+            canvas.width = 800;
+            canvas.height = 400;
+            
+            // Get styles from logo preview
+            const styles = window.getComputedStyle(logoPreview);
+            const text = logoPreview.textContent;
+            const color = styles.color;
+            const bgColor = styles.backgroundColor;
+            const fontSize = parseInt(styles.fontSize);
+            const fontFamily = styles.fontFamily;
+            const fontWeight = styles.fontWeight;
+            const fontStyle = styles.fontStyle;
+            const letterSpacing = styles.letterSpacing;
+            
+            // Draw background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw text
+            ctx.fillStyle = color;
+            ctx.font = `${fontStyle} ${fontWeight} ${fontSize * 2}px ${fontFamily}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Apply letter spacing if needed
+            if (letterSpacing && letterSpacing !== 'normal') {
+                const spacing = parseInt(letterSpacing);
+                let x = canvas.width / 2 - (text.length * spacing) / 2;
+                
+                for (let i = 0; i < text.length; i++) {
+                    ctx.fillText(text[i], x, canvas.height / 2);
+                    x += ctx.measureText(text[i]).width + spacing;
+                }
+            } else {
+                ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+            }
+        }
+
+        // Color Selection
+        document.querySelectorAll('.color-option').forEach(color => {
+            color.addEventListener('click', () => {
+                document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+                color.classList.add('selected');
+                
+                // Update primary color
+                const bgColor = window.getComputedStyle(color).backgroundColor;
+                document.getElementById('primaryColor').value = rgbToHex(bgColor);
+            });
+        });
+
+        // Color input changes
+        document.getElementById('primaryColor').addEventListener('input', function() {
+            document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+        });
+
+        document.getElementById('secondaryColor').addEventListener('input', function() {
+            document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+        });
+
+        document.getElementById('logoColor').addEventListener('input', updateLogoPreview);
+        document.getElementById('logoBgColor').addEventListener('input', updateLogoPreview);
+
+        // Business name change updates logo
+        document.getElementById('businessName').addEventListener('input', updateLogoPreview);
+
+        // Tone of Voice Selection
+        document.getElementById('tone').addEventListener('change', function() {
+            const tone = this.value;
+            if (!tone) return;
+            
+            const toneInfo = toneConfig[tone];
+            const preview = document.getElementById('tonePreview');
+            
+            let html = `
+                <h3>${tone.charAt(0).toUpperCase() + tone.slice(1)} Tone</h3>
+                <p>${toneInfo.description}</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4>Do's</h4>
+                        <ul style="padding-left: 1.5rem;">
+                            ${toneInfo.dos.map(doItem => `<li>${doItem}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Don'ts</h4>
+                        <ul style="padding-left: 1.5rem;">
+                            ${toneInfo.donts.map(dont => `<li>${dont}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <h4>Examples</h4>
+                    <div style="background: var(--hover); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                        ${toneInfo.examples.map(example => `<p style="margin-bottom: 0.5rem;">"${example}"</p>`).join('')}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <p><strong>Social Tone:</strong> ${toneInfo.socialTone}</p>
+                    <p><strong>Writing Style:</strong> ${toneInfo.writingStyle}</p>
+                </div>
+            `;
+            
+            preview.innerHTML = html;
+            
+            // Update social preview
+            updateSocialPreview(tone);
+            
+            // Update business card
+            updateBusinessCard(tone);
+            
+            // Update email signature
+            updateEmailSignature();
+        });
+
+        // Update Social Preview
+        function updateSocialPreview(tone) {
+            const socialInfo = socialContent[tone];
+            const preview = document.getElementById('socialPreview');
+            
+            let html = `
+                <h4>Bio Examples</h4>
+                <div style="background: var(--hover); padding: 1rem; border-radius: 8px; margin: 0.5rem 0 1rem;">
+                    ${socialInfo.bios.map(bio => `<p style="margin-bottom: 0.5rem;">${bio}</p>`).join('')}
+                </div>
+                
+                <h4>Hashtag Suggestions</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 1rem;">
+                    ${socialInfo.hashtags.map(tag => `<span style="background: var(--hover); padding: 0.3rem 0.6rem; border-radius: 4px;">${tag}</span>`).join('')}
+                </div>
+                
+                <h4>Post Ideas</h4>
+                <div style="background: var(--hover); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                    ${socialInfo.postIdeas.map(idea => `<p style="margin-bottom: 0.5rem;">• ${idea}</p>`).join('')}
+                </div>
+            `;
+            
+            preview.innerHTML = html;
+        }
+
+        // Update Business Card
+        function updateBusinessCard(tone) {
+            const template = businessCardTemplates[tone];
+            const card = document.getElementById('businessCardPreview');
+            const content = document.getElementById('businessCardContent');
+            
+            // Apply styles
+            card.style.backgroundColor = template.bgColor;
+            content.style.color = template.textColor;
+            
+            // Update business name if available
+            const businessName = document.getElementById('businessName').value;
+            if (businessName) {
+                document.getElementById('bcName').textContent = businessName;
+                document.getElementById('bcName').style.color = template.accentColor;
+            }
+            
+            // Update contact info
+            const phone = document.getElementById('businessPhone').value || '+1 (123) 456-7890';
+            const email = document.getElementById('businessEmail').value || 'hello@yourbusiness.com';
+            const website = document.getElementById('businessWebsite').value || 'www.yourbusiness.com';
+            
+            document.getElementById('bcPhone').textContent = phone;
+            document.getElementById('bcEmail').textContent = email;
+            document.getElementById('bcWebsite').textContent = website.replace(/^https?:\/\//, '');
+        }
+
+        // Update Email Signature
+        function updateEmailSignature() {
+            const businessName = document.getElementById('businessName').value || 'Your Business';
+            const phone = document.getElementById('businessPhone').value || '+1 (123) 456-7890';
+            const email = document.getElementById('businessEmail').value || 'hello@yourbusiness.com';
+            const website = document.getElementById('businessWebsite').value || 'www.yourbusiness.com';
+            
+            document.getElementById('emailSigCompany').textContent = businessName;
+            document.getElementById('emailSigPhone').textContent = `P: ${phone}`;
+            document.getElementById('emailSigEmail').textContent = `E: ${email}`;
+            document.getElementById('emailSigWeb').textContent = `W: ${website.replace(/^https?:\/\//, '')}`;
+            
+            // Update logo initials
+            const initials = businessName.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 2);
+            document.getElementById('emailSigLogo').textContent = initials;
+        }
+
+        // Tag selection
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+
+        // Helper function to convert RGB to HEX
+        function rgbToHex(rgb) {
+            // Choose correct separator
+            let sep = rgb.indexOf(",") > -1 ? "," : " ";
+            // Turn "rgb(r,g,b)" into [r,g,b]
+            rgb = rgb.substr(4).split(")")[0].split(sep);
+            
+            let r = (+rgb[0]).toString(16),
+                g = (+rgb[1]).toString(16),
+                b = (+rgb[2]).toString(16);
+            
+            if (r.length == 1) r = "0" + r;
+            if (g.length == 1) g = "0" + g;
+            if (b.length == 1) b = "0" + b;
+            
+            return "#" + r + g + b;
+        }
+
+        // Download Logo
+        document.getElementById('downloadLogoBtn').addEventListener('click', function() {
+            const canvas = document.getElementById('logoCanvas');
+            const businessName = document.getElementById('businessName').value || 'your-logo';
+            
+            // Convert canvas to image and download
+            canvas.toBlob(function(blob) {
+                saveAs(blob, `${businessName}-logo.png`);
+            });
+            
+            showNotification('Logo downloaded successfully!');
+        });
+
+        // Download Color Palette
+        document.getElementById('downloadPaletteBtn').addEventListener('click', function() {
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            const businessName = document.getElementById('businessName').value || 'your-brand';
+            
+            // Create a PDF
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text(`${businessName} Color Palette`, 105, 20, null, null, 'center');
+            
+            // Add primary color
+            doc.setFillColor(primaryColor);
+            doc.rect(50, 40, 100, 60, 'F');
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Primary Color', 100, 110, null, null, 'center');
+            doc.text(primaryColor, 100, 120, null, null, 'center');
+            
+            // Add secondary color
+            doc.setFillColor(secondaryColor);
+            doc.rect(50, 130, 100, 60, 'F');
+            doc.text('Secondary Color', 100, 200, null, null, 'center');
+            doc.text(secondaryColor, 100, 210, null, null, 'center');
+            
+            // Save the PDF
+            doc.save(`${businessName}-color-palette.pdf`);
+            
+            showNotification('Color palette downloaded successfully!');
+        });
+
+        // Download Font Guide
+        document.getElementById('downloadFontsBtn').addEventListener('click', function() {
+            const primaryFont = document.getElementById('primaryFont').value;
+            const secondaryFont = document.getElementById('secondaryFont').value;
+            const businessName = document.getElementById('businessName').value || 'your-brand';
+            
+            // Create a PDF
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text(`${businessName} Typography Guide`, 105, 20, null, null, 'center');
+            
+            // Add primary font
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Primary Font:', 20, 40);
+            doc.setFont(primaryFont);
+            doc.text(primaryFont, 20, 50);
+            doc.text('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 20, 60);
+            doc.text('abcdefghijklmnopqrstuvwxyz', 20, 70);
+            doc.text('1234567890!@#$%^&*()', 20, 80);
+            
+            // Add secondary font
+            doc.setFont('Poppins');
+            doc.text('Secondary Font:', 20, 100);
+            doc.setFont(secondaryFont);
+            doc.text(secondaryFont, 20, 110);
+            doc.text('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 20, 120);
+            doc.text('abcdefghijklmnopqrstuvwxyz', 20, 130);
+            doc.text('1234567890!@#$%^&*()', 20, 140);
+            
+            // Add usage guidelines
+            doc.setFont('Poppins');
+            doc.text('Usage Guidelines:', 20, 160);
+            doc.setFontSize(12);
+            doc.text('Primary font should be used for all headings and prominent text.', 20, 170);
+            doc.text('Secondary font should be used for body text and supporting content.', 20, 180);
+            
+            // Save the PDF
+            doc.save(`${businessName}-typography-guide.pdf`);
+            
+            showNotification('Font guide downloaded successfully!');
+        });
+
+        // Download Voice Guide
+        document.getElementById('downloadVoiceGuideBtn').addEventListener('click', function() {
+            const tone = document.getElementById('tone').value;
+            const businessName = document.getElementById('businessName').value || 'your-brand';
+            
+            if (!tone) {
+                showNotification('Please select a tone of voice first!', 'error');
+                return;
+            }
+            
+            const toneInfo = toneConfig[tone];
+            
+            // Create a PDF
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text(`${businessName} Voice Guide`, 105, 20, null, null, 'center');
+            
+            // Add tone description
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Tone: ${tone.charAt(0).toUpperCase() + tone.slice(1)}`, 20, 40);
+            doc.setFontSize(12);
+            doc.text(toneInfo.description, 20, 50, { maxWidth: 170 });
+            
+            // Add dos and don'ts
+            doc.setFontSize(14);
+            doc.text('Do:', 20, 80);
+            doc.setFontSize(12);
+            toneInfo.dos.forEach((doItem, index) => {
+                doc.text(`• ${doItem}`, 25, 90 + (index * 10));
+            });
+            
+            doc.setFontSize(14);
+            doc.text('Don\'t:', 110, 80);
+            doc.setFontSize(12);
+            toneInfo.donts.forEach((dont, index) => {
+                doc.text(`• ${dont}`, 115, 90 + (index * 10));
+            });
+            
+            // Add examples
+            doc.setFontSize(14);
+            doc.text('Examples:', 20, 160);
+            doc.setFontSize(12);
+            toneInfo.examples.forEach((example, index) => {
+                doc.text(`"${example}"`, 25, 170 + (index * 20), { maxWidth: 170 });
+            });
+            
+            // Save the PDF
+            doc.save(`${businessName}-voice-guide.pdf`);
+            
+            showNotification('Voice guide downloaded successfully!');
+        });
+
+        // Download Business Card
+        document.getElementById('downloadBusinessCardBtn').addEventListener('click', function() {
+            const businessCard = document.getElementById('businessCardPreview');
+            const businessName = document.getElementById('businessName').value || 'your-business-card';
+            
+            html2canvas(businessCard).then(canvas => {
+                canvas.toBlob(function(blob) {
+                    saveAs(blob, `${businessName}-business-card.png`);
+                });
+                
+                showNotification('Business card downloaded successfully!');
+            });
+        });
+
+        // Download Email Signature
+        document.getElementById('downloadEmailSigBtn').addEventListener('click', function() {
+            const emailSig = document.getElementById('emailSignaturePreview');
+            const businessName = document.getElementById('businessName').value || 'your-email-sig';
+            
+            html2canvas(emailSig).then(canvas => {
+                canvas.toBlob(function(blob) {
+                    saveAs(blob, `${businessName}-email-signature.png`);
+                });
+                
+                showNotification('Email signature downloaded successfully!');
+            });
+        });
+
+        // Download individual assets
+        document.querySelectorAll('.download-asset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const assetType = this.getAttribute('data-asset');
+                const businessName = document.getElementById('businessName').value || 'your-brand';
+                
+                switch(assetType) {
+                    case 'logo':
+                        // Trigger logo download
+                        document.getElementById('downloadLogoBtn').click();
+                        break;
+                    case 'palette':
+                        // Trigger palette download
+                        document.getElementById('downloadPaletteBtn').click();
+                        break;
+                    case 'guidelines':
+                        // Create brand guidelines PDF
+                        generateBrandGuidelines();
+                        break;
+                    case 'social':
+                        // Create social media kit
+                        generateSocialMediaKit();
+                        break;
+                }
+            });
+        });
+
+        // Generate Brand Guidelines
+        function generateBrandGuidelines() {
+            const businessName = document.getElementById('businessName').value || 'your-brand';
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            const primaryFont = document.getElementById('primaryFont').value;
+            const secondaryFont = document.getElementById('secondaryFont').value;
+            const tone = document.getElementById('tone').value || 'professional';
+            const toneInfo = toneConfig[tone];
+            
+            // Create a PDF
+            const doc = new jsPDF();
+            
+            // Add title page
+            doc.setFontSize(24);
+            doc.setTextColor(108, 92, 231);
+            doc.text(`${businessName}`, 105, 50, null, null, 'center');
+            doc.setFontSize(20);
+            doc.text('Brand Guidelines', 105, 70, null, null, 'center');
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Document version 1.0', 105, 90, null, null, 'center');
+            doc.text(new Date().toLocaleDateString(), 105, 100, null, null, 'center');
+            
+            // Add new page for colors
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text('Color Palette', 105, 20, null, null, 'center');
+            
+            doc.setFillColor(primaryColor);
+            doc.rect(50, 40, 100, 60, 'F');
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Primary Color', 100, 110, null, null, 'center');
+            doc.text(primaryColor, 100, 120, null, null, 'center');
+            
+            doc.setFillColor(secondaryColor);
+            doc.rect(50, 130, 100, 60, 'F');
+            doc.text('Secondary Color', 100, 200, null, null, 'center');
+            doc.text(secondaryColor, 100, 210, null, null, 'center');
+            
+            // Add new page for typography
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text('Typography', 105, 20, null, null, 'center');
+            
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Primary Font:', 20, 40);
+            doc.setFont(primaryFont);
+            doc.text(primaryFont, 20, 50);
+            doc.text('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 20, 60);
+            doc.text('abcdefghijklmnopqrstuvwxyz', 20, 70);
+            doc.text('1234567890!@#$%^&*()', 20, 80);
+            
+            doc.setFont('Poppins');
+            doc.text('Secondary Font:', 20, 100);
+            doc.setFont(secondaryFont);
+            doc.text(secondaryFont, 20, 110);
+            doc.text('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 20, 120);
+            doc.text('abcdefghijklmnopqrstuvwxyz', 20, 130);
+            doc.text('1234567890!@#$%^&*()', 20, 140);
+            
+            // Add new page for voice
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text('Brand Voice', 105, 20, null, null, 'center');
+            
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Tone: ${tone.charAt(0).toUpperCase() + tone.slice(1)}`, 20, 40);
+            doc.setFontSize(12);
+            doc.text(toneInfo.description, 20, 50, { maxWidth: 170 });
+            
+            doc.setFontSize(14);
+            doc.text('Do:', 20, 80);
+            doc.setFontSize(12);
+            toneInfo.dos.forEach((doItem, index) => {
+                doc.text(`• ${doItem}`, 25, 90 + (index * 10));
+            });
+            
+            doc.setFontSize(14);
+            doc.text('Don\'t:', 110, 80);
+            doc.setFontSize(12);
+            toneInfo.donts.forEach((dont, index) => {
+                doc.text(`• ${dont}`, 115, 90 + (index * 10));
+            });
+            
+            // Save the PDF
+            doc.save(`${businessName}-brand-guidelines.pdf`);
+            
+            showNotification('Brand guidelines downloaded successfully!');
+        }
+
+        // Generate Social Media Kit
+        function generateSocialMediaKit() {
+            const businessName = document.getElementById('businessName').value || 'your-brand';
+            const tone = document.getElementById('tone').value || 'professional';
+            const socialInfo = socialContent[tone];
+            
+            // Create a PDF
+            const doc = new jsPDF();
+            
+            // Add title page
+            doc.setFontSize(24);
+            doc.setTextColor(108, 92, 231);
+            doc.text(`${businessName}`, 105, 50, null, null, 'center');
+            doc.setFontSize(20);
+            doc.text('Social Media Kit', 105, 70, null, null, 'center');
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Document version 1.0', 105, 90, null, null, 'center');
+            doc.text(new Date().toLocaleDateString(), 105, 100, null, null, 'center');
+            
+            // Add bio examples
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text('Bio Examples', 105, 20, null, null, 'center');
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            socialInfo.bios.forEach((bio, index) => {
+                doc.text(bio, 20, 40 + (index * 20), { maxWidth: 170 });
+            });
+            
+            // Add hashtag suggestions
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text('Hashtag Suggestions', 105, 20, null, null, 'center');
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            let yPos = 40;
+            socialInfo.hashtags.forEach((tag, index) => {
+                if (index % 3 === 0 && index !== 0) yPos += 10;
+                doc.text(tag, 20 + ((index % 3) * 60), yPos);
+            });
+            
+            // Add post ideas
+            doc.addPage();
+            doc.setFontSize(20);
+            doc.setTextColor(108, 92, 231);
+            doc.text('Post Ideas', 105, 20, null, null, 'center');
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            socialInfo.postIdeas.forEach((idea, index) => {
+                doc.text(`• ${idea}`, 20, 40 + (index * 15), { maxWidth: 170 });
+            });
+            
+            // Save the PDF
+            doc.save(`${businessName}-social-media-kit.pdf`);
+            
+            showNotification('Social media kit downloaded successfully!');
+        }
+
+        // Generate Full Brand Kit
+        document.getElementById('generateBrandKitBtn').addEventListener('click', function() {
+            const loader = document.getElementById('loader');
+            const notification = document.getElementById('notification');
+            
+                        // Show loader
+                        loader.style.display = 'block';
+            
+            // Hide the form while generating
+            document.querySelector('.brand-form').style.opacity = '0.5';
+            document.querySelector('.brand-form').style.pointerEvents = 'none';
+            
+            // Simulate generation process (in a real app, this would be actual processing)
+            setTimeout(() => {
+                // Create zip file with all assets
+                generateFullBrandKit();
+                
+                // Hide loader
+                loader.style.display = 'none';
+                
+                // Show notification with download link
+                notification.style.display = 'block';
+                notification.style.backgroundColor = 'var(--success)';
+                document.getElementById('downloadLink').textContent = 'Download your brand kit';
+                
+                // Re-enable form
+                document.querySelector('.brand-form').style.opacity = '1';
+                document.querySelector('.brand-form').style.pointerEvents = 'auto';
+                
+                // Hide notification after 5 seconds
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }, 3000);
+        });
+
+        // Generate Full Brand Kit (simulated - in a real app this would create actual files)
+        function generateFullBrandKit() {
+            const businessName = document.getElementById('businessName').value || 'your-brand';
+            
+            // In a real implementation, this would:
+            // 1. Create a zip file
+            // 2. Add all generated assets (logo, palette, guidelines, etc.)
+            // 3. Provide download link
+            
+            // For this demo, we'll just show a notification
+            showNotification('Full brand kit generation complete! In a real implementation, this would download a zip file with all your brand assets.');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            // Set color based on type
+            if (type === 'error') {
+                notification.style.backgroundColor = 'var(--error)';
+            } else if (type === 'warning') {
+                notification.style.backgroundColor = 'var(--warning)';
+            } else {
+                notification.style.backgroundColor = 'var(--success)';
+            }
+            
+            notification.style.display = 'block';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialize form with default values
+        function initializeForm() {
+            // Set default logo style
+            document.querySelector('.logo-option[data-logo-style="modern"]').classList.add('selected');
+            
+            // Set default color option
+            document.querySelector('.color-option').classList.add('selected');
+            
+            // Update all previews
+            updateLogoPreview();
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Add event listeners for dynamic updates
+            document.getElementById('businessName').addEventListener('input', function() {
+                updateLogoPreview();
+                updateBusinessCard();
+                updateEmailSignature();
+            });
+            
+            document.getElementById('businessPhone').addEventListener('input', function() {
+                updateBusinessCard();
+                updateEmailSignature();
+            });
+            
+            document.getElementById('businessEmail').addEventListener('input', function() {
+                updateBusinessCard();
+                updateEmailSignature();
+            });
+            
+            document.getElementById('businessWebsite').addEventListener('input', function() {
+                updateBusinessCard();
+                updateEmailSignature();
+            });
+            
+            document.getElementById('tone').addEventListener('change', function() {
+                const tone = this.value;
+                if (tone) {
+                    updateSocialPreview(tone);
+                    updateBusinessCard(tone);
+                }
+            });
+        }
+
+        // Initialize the form when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeForm);
+
+        // Mobile menu toggle (for smaller screens)
+        function setupMobileMenu() {
+            const menuToggle = document.createElement('div');
+            menuToggle.className = 'mobile-menu-toggle';
+            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            menuToggle.style.display = 'none';
+            menuToggle.style.padding = '1rem';
+            menuToggle.style.background = 'var(--primary)';
+            menuToggle.style.color = 'white';
+            menuToggle.style.position = 'fixed';
+            menuToggle.style.bottom = '20px';
+            menuToggle.style.right = '20px';
+            menuToggle.style.borderRadius = '50px';
+            menuToggle.style.zIndex = '1000';
+            menuToggle.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            document.body.appendChild(menuToggle);
+            
+            const tabsContainer = document.querySelector('.tabs');
+            
+            function checkMobileView() {
+                if (window.innerWidth <= 768) {
+                    menuToggle.style.display = 'flex';
+                    tabsContainer.style.display = 'none';
+                } else {
+                    menuToggle.style.display = 'none';
+                    tabsContainer.style.display = 'flex';
+                }
+            }
+            
+            menuToggle.addEventListener('click', function() {
+                if (tabsContainer.style.display === 'none' || !tabsContainer.style.display) {
+                    tabsContainer.style.display = 'flex';
+                    tabsContainer.style.position = 'fixed';
+                    tabsContainer.style.bottom = '80px';
+                    tabsContainer.style.right = '20px';
+                    tabsContainer.style.background = 'white';
+                    tabsContainer.style.padding = '1rem';
+                    tabsContainer.style.borderRadius = '12px';
+                    tabsContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                    tabsContainer.style.flexDirection = 'column';
+                    tabsContainer.style.zIndex = '1000';
+                } else {
+                    tabsContainer.style.display = 'none';
+                }
+            });
+            
+            window.addEventListener('resize', checkMobileView);
+            checkMobileView();
+        }
+
+        // Initialize mobile menu
+        setupMobileMenu();
+
+        // Enhance form inputs for mobile
+        function enhanceMobileInputs() {
+            if ('max' in document.createElement('input')) {
+                // Modern browser with input type support
+                return;
+            }
+            
+            // Fallback for older browsers
+            const colorInputs = document.querySelectorAll('input[type="color"]');
+            colorInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    if (window.innerWidth <= 768) {
+                        this.type = 'text';
+                        setTimeout(() => {
+                            this.type = 'color';
+                        }, 1000);
+                    }
+                });
+            });
+        }
+
+        // Initialize mobile input enhancements
+        enhanceMobileInputs();
+    </script>
+</body>
+</html>

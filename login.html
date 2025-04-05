@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOTYZER Authentication</title>
+    <link rel="icon" type="image/jpeg" href="../Assets/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="login.css">
+    <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="header">
+                <div class="company-name">PROTOTYZER</div>
+                <p>Your AI Marketing Co-Founder</p>
+            </div>
+
+            <div class="form-toggle">
+                <button class="toggle-btn active" data-form="login" onclick="showForm('login')">Login</button>
+                <button class="toggle-btn" data-form="signup" onclick="showForm('signup')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Login</button>
+
+                <div class="divider">or continue with</div>
+
+                <button type="button" class="google-btn">
+                    <i class="fab fa-google"></i>
+                    Sign in with Google
+                </button>
+                
+                
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Create a password" required>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="termsCheckbox" required>
+                        <span class="checkmark"></span>
+                        I agree to <a href="../Terms of Service/terms.html" target="_blank">Terms</a> and <a href="../Privacy Policy/privacy.html" target="_blank">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="submit-btn" id="signupButton">Create Account</button>
+
+                <div class="divider">or continue with</div>
+
+                <button type="button" class="google-btn">
+                    <i class="fab fa-google"></i>
+                    Sign up with Google
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>

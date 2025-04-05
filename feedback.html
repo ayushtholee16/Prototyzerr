@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PROTOTYZER Feedback</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="feedback.css">
+    <link rel="icon" type="image/jpeg" href="../Assets/logo.jpg">
+</head>
+<body>
+    <div class="container">
+        <div class="feedback-card">
+            <h1>Share Your Feedback</h1>
+            
+            <form id="feedbackForm">
+                <div class="form-group">
+                    <label>How would you rate your experience?</label>
+                    <div class="rating-stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Feedback Type</label>
+                    <select>
+                        <option>Feature Request</option>
+                        <option>Bug Report</option>
+                        <option>General Feedback</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Feedback</label>
+                    <textarea placeholder="Share your thoughts..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Email (optional)</label>
+                    <input type="email" placeholder="email@example.com">
+                </div>
+
+                <button type="submit">Send Feedback</button>
+            </form>
+
+            <div class="success-message">
+                Thank you! Your feedback has been received.
+            </div>
+        </div>
+    </div>
+
+    <script src="feedback.js"></script>
+</body>
+</html>

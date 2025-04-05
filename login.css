@@ -1,0 +1,405 @@
+:root {
+    --primary: #6c5ce7;
+    --text: #2d3436;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 450px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.auth-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(108,92,231,0.1);
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.company-name {
+    color: var(--primary);
+    font-size: 1.8em;
+    margin: 0 0 10px;
+    font-weight: 700;
+}
+
+.form-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    color: var(--text);
+    cursor: pointer;
+    position: relative;
+}
+
+.toggle-btn.active {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.toggle-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 0.9em;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.google-btn {
+    width: 100%;
+    padding: 12px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1em;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 20px 0;
+}
+
+.google-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.google-btn i {
+    color: #db4437;
+    font-size: 1.2em;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.submit-btn:hover {
+    opacity: 0.9;
+}
+
+.divider {
+    text-align: center;
+    margin: 25px 0;
+    color: #636e72;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.checkbox-group {
+    margin: 15px 0;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 28px;
+    cursor: pointer;
+    font-size: 0.85em;
+    white-space: nowrap;
+    height: 24px;
+}
+
+.checkbox-container a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    margin: 0 2px;
+}
+
+.checkbox-container a:hover {
+    text-decoration: underline;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+    border-color: var(--primary);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+@media (max-width: 480px) {
+    body {
+        background-color: white;
+        align-items: flex-start;
+        padding-top: 1rem;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 15px;
+    }
+
+    .auth-card {
+        padding: 20px;
+        box-shadow: none;
+        border-radius: 0;
+        width: 100%;
+        margin: 0;
+    }
+    
+    .company-name {
+        font-size: 1.5em;
+    }
+
+    .header {
+        margin-bottom: 25px;
+    }
+
+    .form-toggle {
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+        padding: 8px 15px;
+        font-size: 1rem;
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    input {
+        padding: 12px;
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .google-btn {
+        padding: 12px;
+        font-size: 1em;
+        width: 100%;
+        margin: 15px 0;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .submit-btn {
+        padding: 14px;
+        font-size: 1em;
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    label {
+        font-size: 0.9em;
+    }
+
+    .divider {
+        margin: 20px 0;
+        width: 100%;
+    }
+
+    .checkbox-container {
+        font-size: 0.8em;
+        padding-left: 25px;
+        height: 20px;
+    }
+
+    .checkmark {
+        height: 16px;
+        width: 16px;
+    }
+
+    .checkmark:after {
+        left: 4px;
+        top: 1.5px;
+        width: 4px;
+        height: 8px;
+    }
+
+    .terms-error {
+        margin-left: 30px;
+        margin-top: 5px;
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 360px) {
+    body {
+        padding-top: 0;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .auth-card {
+        padding: 15px;
+    }
+
+    .toggle-btn {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    input,
+    .google-btn,
+    .submit-btn {
+        padding: 10px;
+    }
+}
+
+/* Fix for iOS input zoom */
+@media screen and (-webkit-min-device-pixel-ratio: 0) { 
+    select,
+    textarea,
+    input {
+        font-size: 16px !important;
+    }
+}
+
+/* Fix for notched phones */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+}

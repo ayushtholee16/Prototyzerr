@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOTYZER User Persona Generator</title>
+    <link rel="icon" type="image/jpeg" href="../Assets/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c7;
+            --secondary: #a66efa;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --bg: #f8f9ff;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.12);
+            --hover: rgba(108, 92, 231, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .questionnaire {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(108, 92, 231, 0.1);
+            border-radius: 10px;
+            background: var(--bg);
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--hover);
+            color: var(--primary);
+        }
+
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .persona-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--hover);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: grid;
+            place-items: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--hover);
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            width: 75%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .questionnaire {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Additional styles for enhanced persona cards */
+        .persona-main-card {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+
+        .persona-quote {
+            font-style: italic;
+            color: var(--text-light);
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--hover);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .persona-quote::before, .persona-quote::after {
+            content: '"';
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--hover);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: var(--primary);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background: var(--hover);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 0.2rem;
+        }
+
+        .persona-section-title {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="questionnaire" id="questionnaire">
+            <!-- Step 1 -->
+            <div class="step active" data-step="1">
+                <h2>Personal Information</h2>
+                <div class="form-group">
+                    <label>What is your name?</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>How old are you?</label>
+                    <input type="number" id="age" required>
+                </div>
+                <div class="form-group">
+                    <label>What is your gender?</label>
+                    <select id="gender" required>
+                        <option value="">Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                        <option>Prefer not to say</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Where do you live?</label>
+                    <input type="text" id="location" placeholder="City, Country" required>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary next-step">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step" data-step="2">
+                <h2>Professional Information</h2>
+                <div class="form-group">
+                    <label>What is your current job title?</label>
+                    <input type="text" id="jobTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>What industry do you work in?</label>
+                    <input type="text" id="industry" required>
+                </div>
+                <div class="form-group">
+                    <label>Years of experience?</label>
+                    <input type="number" id="experience" required>
+                </div>
+                <div class="form-group">
+                    <label>Education Level</label>
+                    <select id="education">
+                        <option value="">Select</option>
+                        <option>High School</option>
+                        <option>Bachelor's Degree</option>
+                        <option>Master's Degree</option>
+                        <option>PhD</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Main job responsibilities</label>
+                    <textarea id="responsibilities" rows="3" required></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary prev-step">Back</button>
+                    <button type="button" class="btn btn-primary next-step">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step" data-step="3">
+                <h2>Goals & Motivation</h2>
+                <div class="form-group">
+                    <label>Short-term goals (next 6 months)</label>
+                    <textarea id="shortGoals" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Long-term goals (5+ years)</label>
+                    <textarea id="longGoals" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>What motivates you daily?</label>
+                    <textarea id="motivation" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>What does success look like for you?</label>
+                    <textarea id="success" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Personal quote or motto</label>
+                    <input type="text" id="quote" placeholder="Your favorite quote or personal motto">
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary prev-step">Back</button>
+                    <button type="button" class="btn btn-primary next-step">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step" data-step="4">
+                <h2>Behavior & Preferences</h2>
+                <div class="form-group">
+                    <label>How do you prefer to communicate? (Select all that apply)</label>
+                    <div>
+                        <input type="checkbox" id="email" name="communication" value="Email">
+                        <label for="email" style="display: inline;">Email</label><br>
+                        <input type="checkbox" id="phone" name="communication" value="Phone">
+                        <label for="phone" style="display: inline;">Phone</label><br>
+                        <input type="checkbox" id="inPerson" name="communication" value="In Person">
+                        <label for="inPerson" style="display: inline;">In Person</label><br>
+                        <input type="checkbox" id="messaging" name="communication" value="Messaging Apps">
+                        <label for="messaging" style="display: inline;">Messaging Apps</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>How would you rate your tech savviness? (1-10)</label>
+                    <input type="range" id="techSavvy" min="1" max="10" value="5">
+                    <span id="techValue">5</span>/10
+                </div>
+                <div class="form-group">
+                    <label>What social media platforms do you use regularly?</label>
+                    <input type="text" id="socialMedia" placeholder="Facebook, Instagram, LinkedIn, etc.">
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary prev-step">Back</button>
+                    <button type="button" class="btn btn-primary next-step">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step" data-step="5">
+                <h2>Review & Generate</h2>
+                <div class="summary">
+                    <p>Review your information before generating the persona:</p>
+                    <div id="summaryContent"></div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary prev-step">Back</button>
+                    <button type="button" class="btn btn-primary" id="generateBtn">Generate Persona</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="persona-grid" id="personaCards" style="display: none;">
+            <!-- Persona cards will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+        const userData = {};
+        
+        // Random profile images based on gender
+        const maleImages = [
+            'https://randomuser.me/api/portraits/men/32.jpg',
+            'https://randomuser.me/api/portraits/men/44.jpg',
+            'https://randomuser.me/api/portraits/men/68.jpg'
+        ];
+        
+        const femaleImages = [
+            'https://randomuser.me/api/portraits/women/44.jpg',
+            'https://randomuser.me/api/portraits/women/65.jpg',
+            'https://randomuser.me/api/portraits/women/33.jpg'
+        ];
+        
+        const neutralImages = [
+            'https://randomuser.me/api/portraits/lego/1.jpg',
+            'https://randomuser.me/api/portraits/lego/3.jpg',
+            'https://randomuser.me/api/portraits/lego/5.jpg'
+        ];
+
+        document.querySelectorAll('.next-step').forEach(button => {
+            button.addEventListener('click', () => {
+                if (validateStep(currentStep)) {
+                    currentStep++;
+                    showStep(currentStep);
+                    updateSummary();
+                }
+            });
+        });
+
+        document.querySelectorAll('.prev-step').forEach(button => {
+            button.addEventListener('click', () => {
+                currentStep--;
+                showStep(currentStep);
+            });
+        });
+
+        document.getElementById('generateBtn').addEventListener('click', generatePersona);
+        
+        // Update tech savvy value display
+        document.getElementById('techSavvy').addEventListener('input', function() {
+            document.getElementById('techValue').textContent = this.value;
+        });
+
+        function validateStep(step) {
+            const inputs = document.querySelectorAll(`[data-step="${step}"] input[required], 
+                                                    [data-step="${step}"] textarea[required],
+                                                    [data-step="${step}"] select[required]`);
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.checkValidity()) {
+                    input.reportValidity();
+                    isValid = false;
+                } else {
+                    // Handle different input types
+                    if (input.type === 'checkbox') {
+                        const checkedBoxes = document.querySelectorAll(`[name="${input.name}"]:checked`);
+                        const values = Array.from(checkedBoxes).map(box => box.value);
+                        userData[input.name] = values.join(', ');
+                    } else {
+                        userData[input.id] = input.value;
+                    }
+                }
+            });
+
+            return isValid;
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.querySelector(`[data-step="${step}"]`).classList.add('active');
+        }
+
+        function updateSummary() {
+            if (currentStep === totalSteps) {
+                const summary = document.getElementById('summaryContent');
+                summary.innerHTML = `
+                    <p><strong>Name:</strong> ${userData.name}</p>
+                    <p><strong>Age:</strong> ${userData.age}</p>
+                    <p><strong>Gender:</strong> ${userData.gender}</p>
+                    <p><strong>Location:</strong> ${userData.location}</p>
+                    <p><strong>Occupation:</strong> ${userData.jobTitle}</p>
+                    <p><strong>Industry:</strong> ${userData.industry}</p>
+                    <p><strong>Experience:</strong> ${userData.experience} years</p>
+                `;
+            }
+        }
+        
+        function getRandomImage(gender) {
+            if (gender === 'Male') {
+                return maleImages[Math.floor(Math.random() * maleImages.length)];
+            } else if (gender === 'Female') {
+                return femaleImages[Math.floor(Math.random() * femaleImages.length)];
+            } else {
+                return neutralImages[Math.floor(Math.random() * neutralImages.length)];
+            }
+        }
+        
+        function generateTechSavvyLevel(value) {
+            if (value < 4) return 'Basic';
+            if (value < 7) return 'Intermediate';
+            return 'Advanced';
+        }
+        
+        function generatePersonalityTraits() {
+            const traits = [
+                'Analytical', 'Creative', 'Detail-oriented', 'Big-picture thinker',
+                'Collaborative', 'Independent', 'Structured', 'Flexible',
+                'Risk-taking', 'Cautious', 'Innovative', 'Traditional'
+            ];
+            
+            // Shuffle array and pick 3
+            return traits.sort(() => 0.5 - Math.random()).slice(0, 3);
+        }
+        
+        function generateFrustrations() {
+            const frustrations = [
+                'Inefficient processes', 'Poor communication', 'Lack of resources',
+                'Outdated technology', 'Unclear expectations', 'Too many meetings',
+                'Slow decision making', 'Lack of recognition', 'Red tape',
+                'Information overload', 'Constant interruptions'
+            ];
+            
+            // Shuffle array and pick 2
+            return frustrations.sort(() => 0.5 - Math.random()).slice(0, 2);
+        }
+
+        function generatePersona() {
+            document.getElementById('questionnaire').style.display = 'none';
+            document.getElementById('personaCards').style.display = 'grid';
+            
+            // Generate additional data
+            const personalityTraits = generatePersonalityTraits();
+            const frustrations = generateFrustrations();
+            const techLevel = generateTechSavvyLevel(userData.techSavvy || 5);
+            const profileImage = getRandomImage(userData.gender);
+            
+            const cardsContainer = document.getElementById('personaCards');
+            cardsContainer.innerHTML = `
+                <div class="persona-card persona-main-card">
+                    <img src="${profileImage}" alt="${userData.name}" class="profile-image">
+                    <h2>${userData.name}</h2>
+                    <p>${userData.jobTitle} in ${userData.industry}</p>
+                    <p>${userData.age} years • ${userData.gender || 'Not specified'} • ${userData.location}</p>
+                    
+                    ${userData.quote ? `<div class="persona-quote">${userData.quote}</div>` : ''}
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <span>${userData.experience}+ years XP</span>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <span>${userData.education || 'Not specified'}</span>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <span>${techLevel} tech skills</span>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span>${userData.communication || 'Various'} comms</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
+                        ${personalityTraits.map(trait => `<span class="tag">${trait}</span>`).join('')}
+                    </div>
+                </div>
+
+                <div class="persona-card">
+                    <h3 class="persona-section-title"><i class="fas fa-briefcase"></i> Professional Profile</h3>
+                    <p><strong>Industry:</strong> ${userData.industry}</p>
+                    <p><strong>Experience:</strong> ${userData.experience} years</p>
+                    <p><strong>Education:</strong> ${userData.education || 'Not specified'}</p>
+                    
+                    <h4 style="margin-top: 1rem;">Key Responsibilities</h4>
+                    <p>${userData.responsibilities}</p>
+                    
+                    <h4 style="margin-top: 1rem;">Tech Savviness</h4>
+                    <p>${userData.techSavvy || 5}/10 - ${techLevel}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(userData.techSavvy || 5) * 10}%"></div>
+                    </div>
+                </div>
+
+                <div class="persona-card">
+                    <h3 class="persona-section-title"><i class="fas fa-bullseye"></i> Goals & Motivation</h3>
+                    <h4>Short-term Goals (6 months)</h4>
+                    <p>${userData.shortGoals}</p>
+                    
+                    <h4>Long-term Goals (5+ years)</h4>
+                    <p>${userData.longGoals}</p>
+                    
+                    <h4>Daily Motivation</h4>
+                    <p>${userData.motivation}</p>
+                    
+                    <h4>Definition of Success</h4>
+                    <p>${userData.success}</p>
+                </div>
+
+                <div class="persona-card">
+                    <h3 class="persona-section-title"><i class="fas fa-chart-line"></i> Behavior Patterns</h3>
+                    
+                    <h4>Communication Preferences</h4>
+                    <p>${userData.communication || 'Not specified'}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${userData.communication ? 80 : 30}%"></div>
+                    </div>
+                    
+                    <h4>Social Media Usage</h4>
+                    <p>${userData.socialMedia || 'Limited'}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${userData.socialMedia ? 70 : 30}%"></div>
+                    </div>
+                    
+                    <h4>Learning Style</h4>
+                    <p>Visual learner, prefers hands-on experience</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <div class="persona-card">
+                    <h3 class="persona-section-title"><i class="fas fa-lightbulb"></i> Personality & Preferences</h3>
+                    
+                    <h4>Key Traits</h4>
+                    <div>
+                        ${personalityTraits.map(trait => `<span class="tag">${trait}</span>`).join('')}
+                    </div>
+                    
+                    <h4 style="margin-top: 1rem;">Frustrations</h4>
+                    <ul style="padding-left: 1.2rem;">
+                        ${frustrations.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                    
+                    <h4 style="margin-top: 1rem;">Preferred Tools</h4>
+                    <p>${['Slack', 'Google Workspace', 'Trello', 'Zoom'].map(tool => `<span class="tag">${tool}</span>`).join('')}</p>
+                </div>
+
+                <div class="persona-card">
+                    <h3 class="persona-section-title"><i class="fas fa-comment-dots"></i> Quotes & Insights</h3>
+                    
+                    <div class="persona-quote">
+                        "I need tools that save me time so I can focus on what really matters."
+                    </div>
+                    
+                    <div class="persona-quote">
+                        "Clear communication from vendors is just as important as the product itself."
+                    </div>
+                    
+                    ${userData.quote ? `
+                    <div class="persona-quote">
+                        "${userData.quote}"
+                    </div>
+                    ` : ''}
+                    
+                    <h4 style="margin-top: 1rem;">Key Insight</h4>
+                    <p>${userData.name} values efficiency and clear communication above all else in professional relationships.</p>
+                </div>
+                
+                <div class="download-btn">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-download"></i> Download Persona
+                    </button>
+                </div>
+            `;
+            
+            // Scroll to the persona cards
+            cardsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

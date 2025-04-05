@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOTYZER AI Marketing Solutions</title>
+    <link rel="icon" type="image/jpeg" href="../Assets/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="landingpage.css">
+</head>
+
+<header class="header">
+    <div class="logo">
+        <img src="../Assets/logo.jpg" alt="Logo" 
+        style="height: 40px; vertical-align: middle; margin-right: 10px;">
+        <strong>PROTOTYZER</strong>
+    </div>
+
+    <nav class="nav-links">
+        <a href="../About/about.html">About Us</a>
+        <a href="../Pricing/pricing.html">Pricing</a>
+        <a href="../Feedback/feedback.html">Feedback</a>
+        <div class="header-buttons">
+            <a href="../Login/login.html" class="btn login-btn">Login</a>
+            <a href="../Chatbot/sidebars.html" class="btn start-btn">Start Now</a>
+        </div>
+    </nav>
+
+    <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="user-count">50+ users. One is our cat.</div>
+        <h1 class="main-heading">Marketing so good, even your <br>grandma’s dog noticed.</h1>
+        <p class="sub-heading">
+            Built for teams that want results, not just pretty graphs to stare at during meetings.
+        </p>
+        <a href="../Chatbot/sidebars.html" class="btn start-btn" style="padding: 25px 60px; font-size: 2rem; color: white; text-decoration: none; display: inline-block;">Start Now</a>
+        <p style="font-size: 1.5rem; font-weight: bold; margin-top: 4.5rem;"> *Made on Earth by humans* </p>
+        <p style="font-size: 2.5rem; margin-top: 4.5rem;">
+            <strong style="color: #2d3436;">Beta-tested in a parallel universe where </strong> <strong style="color: #6c5ce7;">ducks rule the internet</strong>
+        </p>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <img src="../Assets/Screenshot (38).png" alt="AI">
+            <h3>Brand Kit</h3>
+            <p>Smart solutions that handle repetitive marketing tasks</p>
+        </div>
+        <div class="feature-card">
+            <img src="../Assets/Screenshot (39).png" alt="Analytics">
+            <h3>Idea Generation</h3>
+            <p>Data-driven decisions powered by machine learning</p>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-section">
+        <h3>PROTOTYZER</h3>
+        <p>Co-Building The Future Of Marketing</p>
+        <div class="social-icons">
+            <a href="https://x.com/TholeAyush"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.linkedin.com/in/ayush-thole-88152635a/"><i class="fab fa-linkedin"></i></a>
+            <a href="https://www.instagram.com/prototyzer?igsh=MWZzcTV0eGZzcjc0eg=="><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+    <div class="footer-section">
+        <h3>Resources</h3>
+        <div class="footer-links">
+            <a href="../Blog/blog.html">Blog</a>
+            <a href="../Pricing/pricing.html">Pricing</a>
+            <a href="../Documentation/documentation.html">Documentation</a>
+            Total Visitors: <span id="visitCount"> 1000 </span>
+            <script>
+    fetch('https://api.countapi.xyz/hit/skylinewebsite.com/visits')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('visitCount').innerText = data.value;
+      });
+  </script>
+
+        </div>
+    </div>
+    <div class="footer-section">
+        <h3>Legal</h3>
+        <div class="footer-links">
+            <a href="../Privacy Policy/privacy.html">Privacy Policy</a>
+            <a href="../Terms of Service/terms.html">Terms of Service</a>
+            <a href="../Security/security.html">Security</a>
+        </div>
+    </div>
+    <script src="landingpage.js"></script>
+</footer>

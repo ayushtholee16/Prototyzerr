@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOTYZER Business Idea Generator</title>
+    <link rel="icon" type="image/jpeg" href="../Assets/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c7;
+            --secondary: #a66efa;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --bg: #f8f9ff;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.12);
+            --hover: rgba(108, 92, 231, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-weight: 300;
+        }
+
+        .generator-form {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: var(--bg);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px var(--hover);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: block;
+            margin: 2rem auto 0;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .results-section {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-category {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--hover);
+        }
+
+        .result-category:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .result-category h3 {
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-category h3 i {
+            margin-right: 0.8rem;
+            color: var(--secondary);
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            background-color: var(--bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+            transition: all 0.3s;
+        }
+
+        li:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+            border: 3px solid var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .generator-form, .results-section {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            button {
+                padding: 0.8rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Business Idea Generator</h1>
+            <p class="subtitle">Transform your vision into a brand with AI-powered creativity</p>
+        </header>
+        
+        <div class="generator-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="industry">Industry/Niche:</label>
+                    <input type="text" id="industry" placeholder="e.g., fitness, tech, fashion" required>
+                </div>
+                <div class="form-group">
+                    <label for="audience">Target Audience:</label>
+                    <input type="text" id="audience" placeholder="e.g., teens, entrepreneurs, students" required>
+                </div>
+                <div class="form-group">
+                    <label for="personality">Brand Personality:</label>
+                    <input type="text" id="personality" placeholder="e.g., fun, bold, modern, luxurious" required>
+                </div>
+                <div class="form-group">
+                    <label for="value">Unique Value or Focus:</label>
+                    <input type="text" id="value" placeholder="e.g., eco-friendly, AI-powered, affordable" required>
+                </div>
+                <div class="form-group">
+                    <label for="keywords">Preferred Keywords in Name:</label>
+                    <input type="text" id="keywords" placeholder="Optional keywords to include">
+                </div>
+                <div class="form-group">
+                    <label for="region">Operating Region:</label>
+                    <select id="region">
+                        <option value="local">Local</option>
+                        <option value="national">National</option>
+                        <option value="global">Global</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="services">Products/Services Offered:</label>
+                    <textarea id="services" rows="2" placeholder="Optional description of offerings"></textarea>
+                </div>
+            </div>
+            <button id="generateBtn">Generate Business Ideas</button>
+        </div>
+
+        <div class="results-section" id="results">
+            <div class="result-category fade-in delay-1">
+                <h3><i class="fas fa-lightbulb"></i> Business Name Ideas</h3>
+                <ul id="businessNames"></ul>
+            </div>
+            
+            <div class="result-category fade-in delay-2">
+                <h3><i class="fas fa-quote-left"></i> Slogan Suggestions</h3>
+                <ul id="slogans"></ul>
+            </div>
+
+            <div class="result-category fade-in delay-3">
+                <h3><i class="fas fa-tag"></i> Tagline Options</h3>
+                <ul id="taglines"></ul>
+            </div>
+
+            <div class="result-category fade-in delay-1">
+                <h3><i class="fas fa-chess-queen"></i> Brand Concept</h3>
+                <p id="brandConcept"></p>
+            </div>
+
+            <div class="result-category fade-in delay-2">
+                <h3><i class="fas fa-bullseye"></i> Mission Statement</h3>
+                <p id="mission"></p>
+            </div>
+
+            <div class="result-category fade-in delay-3">
+                <h3><i class="fas fa-star"></i> Unique Selling Propositions</h3>
+                <ul id="usps"></ul>
+            </div>
+
+            <div class="result-category fade-in delay-1">
+                <h3><i class="fas fa-palette"></i> Logo Style Suggestions</h3>
+                <p id="logoStyle"></p>
+            </div>
+
+            <div class="result-category fade-in delay-2">
+                <h3><i class="fas fa-globe"></i> Domain Name Suggestions</h3>
+                <ul id="domains"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Advanced name generation components
+        const prefixes = ["Zen", "Nova", "Urban", "Prime", "Elite", "Vertex", "Apex", "Pulse", "Vanta", "Omni"];
+        const suffixes = ["Labs", "Hub", "Forge", "Sphere", "Nest", "Core", "Edge", "Wave", "Vibe", "X"];
+        const actionVerbs = ["Empower", "Transform", "Elevate", "Redefine", "Revolutionize", "Optimize", "Amplify", "Streamline"];
+        const valueAdjectives = ["Smart", "Seamless", "Intuitive", "Powerful", "Agile", "Premium", "Cutting-edge", "Next-gen"];
+
+        // Industry-specific word banks
+        const industryWords = {
+            tech: ["Byte", "Code", "Data", "Tech", "Logic", "Pixel", "Cloud", "AI", "Cyber", "Quantum"],
+            fitness: ["Fit", "Flex", "Peak", "Core", "Burn", "Pulse", "Motion", "Zen", "Vital", "Rush"],
+            fashion: ["Vogue", "Chic", "Thread", "Silk", "Drape", "Mode", "Stitch", "Hue", "Trend", "Loom"],
+            food: ["Bite", "Savor", "Crumb", "Gusto", "Zest", "Roast", "Whisk", "Fresh", "Piquant", "Nosh"]
+        };
+
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            // Get input values
+            const inputs = {
+                industry: document.getElementById('industry').value.trim().toLowerCase(),
+                audience: document.getElementById('audience').value.trim().toLowerCase(),
+                personality: document.getElementById('personality').value.trim().toLowerCase(),
+                value: document.getElementById('value').value.trim().toLowerCase(),
+                keywords: document.getElementById('keywords').value.trim().toLowerCase().split(/[, ]+/).filter(Boolean),
+                region: document.getElementById('region').value,
+                services: document.getElementById('services').value.trim()
+            };
+
+            // Generate all components
+            generateBusinessNames(inputs);
+            generateSlogans(inputs);
+            generateTaglines(inputs);
+            generateBrandConcept(inputs);
+            generateMission(inputs);
+            generateUSPs(inputs);
+            generateLogoStyle(inputs);
+            generateDomains(inputs);
+
+            // Show results with animation
+            document.getElementById('results').style.display = 'block';
+            window.scrollTo({
+                top: document.getElementById('results').offsetTop - 20,
+                behavior: 'smooth'
+            });
+        });
+
+        function generateBusinessNames(inputs) {
+            const names = new Set();
+            const industryKey = Object.keys(industryWords).find(key => inputs.industry.includes(key)) || 'tech';
+            const industrySpecific = industryWords[industryKey];
+            
+            // Generate 15 potential names using different patterns
+            const patterns = [
+                // Pattern 1: Prefix + Industry word + Suffix
+                () => `${randomChoice(prefixes)}${randomChoice(industrySpecific)}${randomChoice(suffixes)}`,
+                
+                // Pattern 2: Value + Industry word
+                () => `${inputs.value.split(' ')[0].charAt(0).toUpperCase() + inputs.value.slice(1)}${randomChoice(industrySpecific)}`,
+                
+                // Pattern 3: Personality + Core concept
+                () => `${inputs.personality.charAt(0).toUpperCase() + inputs.personality.slice(1)}${inputs.value.split(' ')[0].charAt(0).toUpperCase() + inputs.value.slice(1)}`,
+                
+                // Pattern 4: Keyword + Action word
+                () => inputs.keywords.length > 0 ? 
+                    `${inputs.keywords[0].charAt(0).toUpperCase() + inputs.keywords[0].slice(1)}${randomChoice(['ify', 'able', 'ious', 'ate', 'ify'])}` : 
+                    `${randomChoice(actionVerbs)}${randomChoice(['r', 'x', 'ly', 'fy'])}`,
+                
+                // Pattern 5: Audience-focused names
+                () => `${inputs.audience.charAt(0).toUpperCase() + inputs.audience.slice(1)}${randomChoice(['ly', 'r', 'd', 'fy'])}`,
+                
+                // Pattern 6: Futuristic/tech sounding
+                () => `${randomChoice(['X', 'Z', 'Q'])}${randomChoice(['on', 'io', 'ari', 'ent'])}${randomChoice(industrySpecific)}`,
+                
+                // Pattern 7: Simple descriptive
+                () => `${inputs.value.split(' ')[0].charAt(0).toUpperCase() + inputs.value.slice(1)} ${inputs.industry.charAt(0).toUpperCase() + inputs.industry.slice(1)}`,
+                
+                // Pattern 8: Compound words
+                () => `${randomChoice(industrySpecific)}${randomChoice(['ly', 'ify', 'r', 'x', 'io'])}`,
+                
+                // Pattern 9: Alliteration
+                () => {
+                    const firstLetter = inputs.industry.charAt(0).toUpperCase();
+                    return `${firstLetter}${inputs.industry.slice(1)} ${firstLetter}${randomChoice(['onnect', 'reate', 'ompany', 'ollective'])}`;
+                },
+                
+                // Pattern 10: Acronym-style
+                () => {
+                    const words = inputs.value.split(' ');
+                    if (words.length >= 2) {
+                        return `${words[0].charAt(0).toUpperCase()}${words[1].charAt(0).toUpperCase()}${randomChoice(['X', 'Q', 'Z'])}`;
+                    }
+                    return `${inputs.industry.charAt(0).toUpperCase()}${inputs.personality.charAt(0).toUpperCase()}${randomChoice(['X', 'Q', 'Z'])}`;
+                }
+            ];
+
+            // Generate until we have 15 unique names
+            while (names.size < 15) {
+                const pattern = randomChoice(patterns);
+                const name = pattern();
+                if (name.length >= 4 && name.length <= 20) {
+                    names.add(name.replace(/\s+/g, ''));
+                }
+            }
+
+            // Convert to array and select top 10
+            const nameList = Array.from(names).slice(0, 10);
+            populateList('businessNames', nameList);
+        }
+
+        function generateSlogans(inputs) {
+            const slogans = [
+                `${randomChoice(actionVerbs)} ${inputs.industry} for ${inputs.audience}`,
+                `Where ${inputs.personality} meets ${inputs.value}`,
+                `${inputs.value} made ${inputs.personality}`,
+                `The ${inputs.region} standard in ${inputs.industry}`,
+                `${randomChoice(valueAdjectives)} ${inputs.industry} solutions`,
+                `Designed for ${inputs.audience}, built for ${inputs.value}`,
+                `${inputs.personality.charAt(0).toUpperCase() + inputs.personality.slice(1)} ${inputs.industry} reimagined`,
+                `Your ${inputs.value} ${inputs.industry} partner`,
+                `${randomChoice(['Experience', 'Discover', 'Embrace'])} the ${inputs.value} difference`,
+                `Better ${inputs.industry} through ${inputs.value}`
+            ];
+            
+            // Select 5 unique slogans
+            const selected = [];
+            while (selected.length < 5) {
+                const slogan = randomChoice(slogans);
+                if (!selected.includes(slogan)) {
+                    selected.push(slogan);
+                }
+            }
+            
+            populateList('slogans', selected);
+        }
+
+        function generateTaglines(inputs) {
+            const taglines = [
+                `${randomChoice(valueAdjectives)}. ${inputs.personality.charAt(0).toUpperCase() + inputs.personality.slice(1)}. ${inputs.value.charAt(0).toUpperCase() + inputs.value.slice(1)}.`,
+                `Your ${inputs.industry} journey starts here`,
+                `${inputs.personality.charAt(0).toUpperCase() + inputs.personality.slice(1)} ${inputs.industry} for ${inputs.audience}`,
+                `Built different. Built for ${inputs.audience}.`,
+                `${inputs.value.charAt(0).toUpperCase() + inputs.value.slice(1)} first, always.`
+            ];
+            
+            // Select 3 unique taglines
+            const selected = [];
+            while (selected.length < 3) {
+                const tagline = randomChoice(taglines);
+                if (!selected.includes(tagline)) {
+                    selected.push(tagline);
+                }
+            }
+            
+            populateList('taglines', selected);
+        }
+
+        function generateBrandConcept(inputs) {
+            const concepts = [
+                `A ${inputs.personality} ${inputs.industry} ${inputs.region === 'global' ? 'platform' : 'service'} designed specifically for ${inputs.audience}, delivering ${inputs.value} through ${randomChoice(['innovative technology', 'cutting-edge design', 'exceptional customer experiences', 'premium quality'])}. We combine ${randomChoice(['expert knowledge', 'data-driven insights', 'artistic vision'])} with ${randomChoice(['a user-first approach', 'sustainable practices', 'community-focused values'])} to create something truly unique.`,
+                
+                `${inputs.industry.charAt(0).toUpperCase() + inputs.industry.slice(1)} reimagined for the ${inputs.audience} who demand ${inputs.value}. Our ${inputs.personality} approach ${inputs.region === 'local' ? 'in your community' : `across ${inputs.region} markets`} sets us apart through ${randomChoice(['unparalleled quality', 'innovative solutions', 'personalized service'])} and ${randomChoice(['a commitment to excellence', 'transparent practices', 'environmental responsibility'])}.`
+            ];
+            
+            document.getElementById('brandConcept').textContent = randomChoice(concepts);
+        }
+
+        function generateMission(inputs) {
+            const missions = [
+                `To ${randomChoice(['empower', 'inspire', 'enable'])} ${inputs.audience} through ${inputs.value} ${inputs.industry} that's ${inputs.personality}, ${randomChoice(['accessible', 'innovative', 'sustainable'])} and ${randomChoice(['transformative', 'impactful', 'exceptional'])}.`,
+                
+                `Our mission is to ${randomChoice(['revolutionize', 'redefine', 'elevate'])} the ${inputs.industry} experience for ${inputs.audience} by delivering ${inputs.value} solutions that are ${inputs.personality} and ${randomChoice(['ethically produced', 'technologically advanced', 'community focused'])}.`,
+                
+                `To be the ${inputs.region} leader in ${inputs.industry} by providing ${inputs.audience} with ${inputs.value} through ${inputs.personality} ${randomChoice(['products', 'services', 'experiences'])} that ${randomChoice(['exceed expectations', 'drive change', 'create value'])}.`
+            ];
+            
+            document.getElementById('mission').textContent = randomChoice(missions);
+        }
+
+        function generateUSPs(inputs) {
+            const usps = [
+                `${randomChoice(['Unmatched', 'Industry-leading', 'Award-winning'])} ${inputs.value} in the ${inputs.industry} space`,
+                `${inputs.personality.charAt(0).toUpperCase() + inputs.personality.slice(1)} approach designed specifically for ${inputs.audience}`,
+                `${inputs.region === 'global' ? 'Worldwide' : inputs.region === 'national' ? 'Nationwide' : 'Local'} ${inputs.industry} expertise with ${inputs.value} focus`,
+                `${randomChoice(['Proprietary', 'Patented', 'Exclusive'])} ${randomChoice(['technology', 'methodology', 'process'])} delivers ${randomChoice(['better results', 'faster outcomes', 'higher quality'])}`,
+                `${randomChoice(['Ethically', 'Sustainably', 'Responsibly'])} sourced ${randomChoice(['materials', 'ingredients', 'components'])} for ${randomChoice(['peace of mind', 'a better planet', 'community benefit'])}`,
+                `${randomChoice(['24/7', 'On-demand', 'Personalized'])} ${randomChoice(['support', 'service', 'access'])} unmatched in the industry`
+            ];
+            
+            // Select 3 unique USPs
+            const selected = [];
+            while (selected.length < 3) {
+                const usp = randomChoice(usps);
+                if (!selected.includes(usp)) {
+                    selected.push(usp);
+                }
+            }
+            
+            populateList('usps', selected);
+        }
+
+        function generateLogoStyle(inputs) {
+            const styles = {
+                modern: "Clean, minimalist design with geometric shapes and a limited color palette",
+                luxury: "Elegant typography with subtle gold/silver accents and plenty of white space",
+                fun: "Playful, rounded shapes with bright colors and expressive typography",
+                tech: "Futuristic look with angular shapes, gradient colors, and a digital feel",
+                organic: "Hand-drawn elements with natural colors and flowing, asymmetrical shapes"
+            };
+            
+            const colors = {
+                modern: ["Navy blue and white", "Black and electric blue", "Charcoal and lime"],
+                luxury: ["Black and gold", "Deep purple and silver", "Navy and cream"],
+                fun: ["Bright orange and teal", "Yellow and purple", "Pink and blue"],
+                tech: ["Electric blue gradient", "Neon green on black", "Purple to pink gradient"],
+                organic: ["Sage green and tan", "Sky blue and leaf green", "Terracotta and cream"]
+            };
+            
+            const personalityToStyle = {
+                fun: "fun",
+                bold: "modern",
+                modern: "tech",
+                luxurious: "luxury",
+                eco: "organic",
+                default: "modern"
+            };
+            
+            const styleKey = personalityToStyle[inputs.personality] || personalityToStyle.default;
+            const colorOptions = colors[styleKey];
+            
+            const logoDescription = `
+                Recommended style: <span class="highlight">${styles[styleKey]}</span>.
+                Color options: <span class="highlight">${colorOptions.join(', ')}</span>.
+                Consider using ${randomChoice(['a wordmark with subtle icon', 'an abstract symbol', 'a lettermark', 'a mascot', 'a combination mark'])} 
+                that reflects your ${inputs.value} focus.
+            `;
+            
+            document.getElementById('logoStyle').innerHTML = logoDescription;
+        }
+
+        function generateDomains(inputs) {
+            const businessNames = Array.from(document.getElementById('businessNames').querySelectorAll('li')).map(li => li.textContent);
+            const tlds = [".com", ".io", ".co", ".ai", ".network"];
+            const domains = [];
+            
+            businessNames.slice(0, 5).forEach(name => {
+                const cleanName = name.replace(/\s+/g, '').toLowerCase();
+                tlds.forEach(tld => {
+                    domains.push(`${cleanName}${tld}`);
+                });
+            });
+            
+            // Select 5 unique domains
+            const selected = [];
+            while (selected.length < 5) {
+                const domain = randomChoice(domains);
+                if (!selected.includes(domain)) {
+                    selected.push(domain);
+                }
+            }
+            
+            populateList('domains', selected);
+        }
+
+        // Helper functions
+        function randomChoice(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function populateList(elementId, items) {
+            const list = document.getElementById(elementId);
+            list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+        }
+    </script>
+</body>
+</html>

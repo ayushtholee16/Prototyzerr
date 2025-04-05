@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOTYZER Instant Ad & Content Creator</title>
+    <link rel="icon" type="image/jpeg" href="../Assets/logo.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/universal-sentence-encoder@1.3.3"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c7;
+            --secondary: #a66efa;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --bg: #f8f9ff;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.12);
+            --hover: rgba(108, 92, 231, 0.08);
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --error: #d63031;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--hover);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: var(--card-bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--hover);
+            color: var(--primary);
+            box-shadow: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--hover);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .content-editor {
+            min-height: 200px;
+            border: 2px solid var(--hover);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--hover);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .tag:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--hover);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PROTOTYZER Instant Ad & Content Creator</h1>
+        
+        <div class="card">
+            <div class="tabs">
+                <div class="tab active" data-tab="input">Input</div>
+                <div class="tab" data-tab="content">Content</div>
+                <div class="tab" data-tab="export">Export</div>
+            </div>
+
+            <!-- Input Tab -->
+            <div class="tab-content active" id="input">
+                <div class="form-group">
+                    <label for="productName">Product/Service Name *</label>
+                    <input type="text" id="productName" required placeholder="Your amazing product name">
+                </div>
+
+                <div class="form-group">
+                    <label for="productDesc">Product Description</label>
+                    <textarea id="productDesc" rows="3" placeholder="What does your product/service do?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetAudience">Target Audience</label>
+                    <input type="text" id="targetAudience" placeholder="Who is your ideal customer?">
+                </div>
+
+                <div class="form-group">
+                    <label for="contentType">Content Type *</label>
+                    <select id="contentType" required>
+                        <option value="">Select content type</option>
+                        <option value="social">Social Media Post</option>
+                        <option value="ad">Advertisement Copy</option>
+                        <option value="blog">Blog Post Outline</option>
+                        <option value="email">Email Campaign</option>
+                        <option value="seo">SEO Meta Description</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tone">Tone of Voice</label>
+                    <select id="tone">
+                        <option value="professional">Professional</option>
+                        <option value="playful">Playful</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="bold">Bold</option>
+                        <option value="friendly">Friendly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="keywords">Seed Keywords (comma separated)</label>
+                    <input type="text" id="keywords" placeholder="e.g., innovative, affordable, premium">
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn" id="generateBtn">Generate Content</button>
+                </div>
+            </div>
+
+            <!-- Content Tab -->
+            <div class="tab-content" id="content">
+                <div class="form-group">
+                    <label>Generated Content</label>
+                    <div class="content-editor" id="generatedContent" contenteditable="true"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Suggested Keywords & Hashtags</label>
+                    <div id="keywordsContainer"></div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" data-prev-tab="input">Back</button>
+                    <button class="btn" data-next-tab="export">Next: Export</button>
+                </div>
+            </div>
+
+            <!-- Export Tab -->
+            <div class="tab-content" id="export">
+                <div class="form-group">
+                    <label>Final Content</label>
+                    <div class="content-editor" id="finalContent" contenteditable="true"></div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" data-prev-tab="content">Back</button>
+                    <button class="btn" id="copyBtn">Copy to Clipboard</button>
+                    <button class="btn" id="downloadBtn">Download as TXT</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Animation -->
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>Generating your amazing content...</p>
+        </div>
+
+        <!-- Notification -->
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <script>
+        // Marketing content templates and datasets
+        const contentTemplates = {
+            social: {
+                professional: "Introducing {productName} - the perfect solution for {targetAudience}. {productDesc}. Learn more today!",
+                playful: "🎉 Exciting news! {productName} is here to make your life better! Perfect for {targetAudience}. {productDesc}. #Excited",
+                luxury: "Experience the exquisite {productName}. Designed for discerning {targetAudience}. {productDesc}. Elevate your experience.",
+                bold: "BREAKING: {productName} changes everything for {targetAudience}. {productDesc}. Get yours now!",
+                friendly: "Hey there! We're thrilled to introduce {productName} - perfect for {targetAudience}. {productDesc}. Let us know what you think!"
+            },
+            ad: {
+                professional: "Discover {productName} - the innovative solution for {targetAudience}. {productDesc}. Limited time offer - act now!",
+                playful: "You'll love {productName}! It's the perfect match for {targetAudience}. {productDesc}. Try it today! 😊",
+                luxury: "Indulge in {productName} - the ultimate choice for {targetAudience}. {productDesc}. Experience luxury today.",
+                bold: "STOP what you're doing! {productName} is here for {targetAudience}. {productDesc}. Game changer!",
+                friendly: "We think you'll love {productName}! It's perfect for {targetAudience}. {productDesc}. Give it a try!"
+            },
+            blog: {
+                professional: "The Complete Guide to {productName}\n\nIntroduction: {productDesc}\n\nWhy {targetAudience} Needs This\nKey Features\nBenefits\nHow to Get Started\nConclusion",
+                playful: "Why Everyone's Talking About {productName}\n\n{productDesc}\n\nPerfect for {targetAudience}\n5 Reasons You'll Love It\nFun Ways to Use It\nWhere to Get Yours",
+                luxury: "The Art of {productName}\n\n{productDesc}\n\nFor the discerning {targetAudience}\nCraftsmanship\nExclusive Features\nThe {productName} Experience",
+                bold: "{productName}: The Game-Changer for {targetAudience}\n\n{productDesc}\n\nWhy It's Different\nWhat It Solves\nHow It Works\nGet Yours Now",
+                friendly: "Hey {targetAudience}! Let's Talk About {productName}\n\n{productDesc}\n\nWhy We Created It\nHow It Helps You\nOur Favorite Features\nTry It Today"
+            },
+            email: {
+                professional: "Subject: Introducing {productName} for {targetAudience}\n\nDear [First Name],\n\nWe're excited to introduce {productName} - {productDesc}.\n\nPerfect for {targetAudience}, this solution offers:\n- Benefit 1\n- Benefit 2\n- Benefit 3\n\nLearn more: [Link]\n\nBest regards,\n[Your Name]",
+                playful: "Subject: 🎉 Something awesome for {targetAudience}!\n\nHi [First Name],\n\nWe've got something fun for you! Meet {productName} - {productDesc}.\n\nYou'll love:\n✨ Feature 1\n✨ Feature 2\n✨ Feature 3\n\nCheck it out: [Link]\n\nCheers,\n[Your Team]",
+                luxury: "Subject: An Exclusive Invitation to Experience {productName}\n\nDear [First Name],\n\nWe're delighted to present {productName} - {productDesc}.\n\nCrafted for {targetAudience}, this exceptional offering includes:\n• Premium Feature 1\n• Premium Feature 2\n• Premium Feature 3\n\nDiscover more: [Link]\n\nWarm regards,\n[Your Name]",
+                bold: "Subject: {productName} is here - and it's a game-changer!\n\n[First Name],\n\nThis changes everything. {productName} - {productDesc}.\n\nFor {targetAudience} who demand more:\n🔥 Benefit 1\n🔥 Benefit 2\n🔥 Benefit 3\n\nSee why: [Link]\n\n- The Team",
+                friendly: "Subject: Thought you'd like {productName}!\n\nHi [First Name],\n\nWe made something just for {targetAudience} - {productName}!\n\n{productDesc}\n\nWhy you'll love it:\n💙 Reason 1\n💙 Reason 2\n💙 Reason 3\n\nTake a look: [Link]\n\nTalk soon,\n[Your Name]"
+            },
+            seo: {
+                professional: "{productName} - the perfect solution for {targetAudience}. {productDesc}. Discover how it can help you today.",
+                playful: "{productName} makes life better for {targetAudience}! {productDesc}. Fun, easy, and effective - try it now!",
+                luxury: "Experience premium {productName} for {targetAudience}. {productDesc}. Elevate your standards today.",
+                bold: "{productName} changes everything for {targetAudience}. {productDesc}. The solution you've been waiting for.",
+                friendly: "Meet {productName} - perfect for {targetAudience}. {productDesc}. Simple, helpful, and designed for you."
+            }
+        };
+
+        // Keyword and hashtag datasets
+        const keywordDatabase = {
+            tech: ["innovation", "technology", "digital", "future", "smart", "ai", "automation", "software", "hardware"],
+            fashion: ["style", "trend", "outfit", "design", "luxury", "accessories", "wear", "look", "fashionista"],
+            food: ["delicious", "recipe", "tasty", "cuisine", "foodie", "meal", "dining", "flavor", "culinary"],
+            health: ["wellness", "fitness", "health", "nutrition", "exercise", "mindfulness", "selfcare", "recovery"],
+            finance: ["money", "investment", "savings", "wealth", "financial", "budget", "economy", "growth"]
+        };
+
+        const hashtagDatabase = {
+            tech: ["#Tech", "#Innovation", "#Digital", "#FutureTech", "#AI", "#TechNews", "#Gadgets", "#SmartTech"],
+            fashion: ["#Fashion", "#Style", "#OOTD", "#Lookbook", "#Fashionista", "#Trending", "#Wardrobe", "#Luxury"],
+            food: ["#Food", "#Foodie", "#Delicious", "#Yummy", "#Recipe", "#Cooking", "#Eats", "#FoodPhotography"],
+            health: ["#Wellness", "#Fitness", "#Healthy", "#SelfCare", "#Mindfulness", "#Workout", "#Nutrition"],
+            finance: ["#Finance", "#Money", "#Investing", "#Wealth", "#Budget", "#Savings", "#FinancialFreedom"]
+        };
+
+        // Tab Navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Next/Back Button Navigation
+        document.querySelectorAll('[data-next-tab], [data-prev-tab]').forEach(button => {
+            button.addEventListener('click', () => {
+                const currentTab = button.closest('.tab-content');
+                const nextTabId = button.getAttribute('data-next-tab') || button.getAttribute('data-prev-tab');
+                
+                document.querySelector(`.tab[data-tab="${currentTab.id}"]`).classList.remove('active');
+                currentTab.classList.remove('active');
+                
+                document.querySelector(`.tab[data-tab="${nextTabId}"]`).classList.add('active');
+                document.getElementById(nextTabId).classList.add('active');
+                
+                // When moving to export tab, copy the generated content
+                if (nextTabId === 'export') {
+                    document.getElementById('finalContent').innerHTML = 
+                        document.getElementById('generatedContent').innerHTML;
+                }
+            });
+        });
+
+        // Generate Content
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const loader = document.getElementById('loader');
+            const notification = document.getElementById('notification');
+            
+            // Show loader
+            loader.style.display = 'block';
+            
+            // Get input values
+            const productName = document.getElementById('productName').value || 'Your Product';
+            const productDesc = document.getElementById('productDesc').value || 'An amazing product';
+            const targetAudience = document.getElementById('targetAudience').value || 'your customers';
+            const contentType = document.getElementById('contentType').value;
+            const tone = document.getElementById('tone').value;
+            const keywords = document.getElementById('keywords').value;
+            
+            if (!contentType) {
+                notification.textContent = 'Please select a content type';
+                notification.style.display = 'block';
+                notification.style.background = 'var(--error)';
+                loader.style.display = 'none';
+                
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            // Simulate AI processing delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Generate content from template
+            let content = contentTemplates[contentType][tone]
+                .replace(/{productName}/g, productName)
+                .replace(/{productDesc}/g, productDesc)
+                .replace(/{targetAudience}/g, targetAudience);
+            
+            // Add some dynamic variations
+            content = enhanceContent(content, keywords);
+            
+            // Display generated content
+            document.getElementById('generatedContent').innerHTML = content;
+            
+            // Generate keywords and hashtags
+            generateKeywordsAndHashtags(productName, productDesc, targetAudience);
+            
+            // Switch to content tab
+            document.querySelector('.tab[data-tab="content"]').click();
+            
+            // Hide loader
+            loader.style.display = 'none';
+            
+            // Show success notification
+            notification.textContent = 'Content generated successfully!';
+            notification.style.display = 'block';
+            notification.style.background = 'var(--success)';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        });
+
+        // Enhance content with dynamic elements
+        function enhanceContent(content, keywords) {
+            // Add some dynamic benefits/features if placeholders exist
+            if (content.includes("Benefit 1")) {
+                const benefits = [
+                    "Saves you time and money",
+                    "Easy to use and implement",
+                    "Professional quality results",
+                    "Backed by customer satisfaction",
+                    "Innovative solution to common problems"
+                ];
+                
+                content = content
+                    .replace("Benefit 1", benefits[Math.floor(Math.random() * benefits.length)])
+                    .replace("Benefit 2", benefits[Math.floor(Math.random() * benefits.length)])
+                    .replace("Benefit 3", benefits[Math.floor(Math.random() * benefits.length)]);
+            }
+            
+            if (content.includes("Feature 1")) {
+                const features = [
+                    "User-friendly interface",
+                    "Advanced customization options",
+                    "24/7 customer support",
+                    "Regular updates and improvements",
+                    "Compatible with all devices"
+                ];
+                
+                content = content
+                    .replace("Feature 1", features[Math.floor(Math.random() * features.length)])
+                    .replace("Feature 2", features[Math.floor(Math.random() * features.length)])
+                    .replace("Feature 3", features[Math.floor(Math.random() * features.length)]);
+            }
+            
+            if (content.includes("Reason 1")) {
+                const reasons = [
+                    "It solves a real problem",
+                    "Customers love it",
+                    "It's affordable and effective",
+                    "You'll see results quickly",
+                    "It's backed by our guarantee"
+                ];
+                
+                content = content
+                    .replace("Reason 1", reasons[Math.floor(Math.random() * reasons.length)])
+                    .replace("Reason 2", reasons[Math.floor(Math.random() * reasons.length)])
+                    .replace("Reason 3", reasons[Math.floor(Math.random() * reasons.length)]);
+            }
+            
+            // Add keywords if provided
+            if (keywords) {
+                const keywordList = keywords.split(',').map(k => k.trim()).filter(k => k);
+                if (keywordList.length > 0) {
+                    content += "\n\nKeywords: " + keywordList.join(', ');
+                }
+            }
+            
+            return content;
+        }
+
+        // Generate relevant keywords and hashtags
+        function generateKeywordsAndHashtags(productName, productDesc, targetAudience) {
+            const container = document.getElementById('keywordsContainer');
+            container.innerHTML = '';
+            
+            // Simple keyword extraction (in a real app, you'd use more sophisticated NLP)
+            const words = (productName + ' ' + productDesc + ' ' + targetAudience).toLowerCase().split(/\s+/);
+            const uniqueWords = [...new Set(words.filter(word => word.length > 3))];
+            
+            // Add some from our database based on common terms
+            let additionalKeywords = [];
+            let additionalHashtags = [];
+            
+            if (productDesc.includes('tech') || productDesc.includes('digital')) {
+                additionalKeywords = additionalKeywords.concat(keywordDatabase.tech);
+                additionalHashtags = additionalHashtags.concat(hashtagDatabase.tech);
+            }
+            
+            if (productDesc.includes('fashion') || productDesc.includes('style')) {
+                additionalKeywords = additionalKeywords.concat(keywordDatabase.fashion);
+                additionalHashtags = additionalHashtags.concat(hashtagDatabase.fashion);
+            }
+            
+            if (productDesc.includes('food') || productDesc.includes('recipe')) {
+                additionalKeywords = additionalKeywords.concat(keywordDatabase.food);
+                additionalHashtags = additionalHashtags.concat(hashtagDatabase.food);
+            }
+            
+            if (productDesc.includes('health') || productDesc.includes('fitness')) {
+                additionalKeywords = additionalKeywords.concat(keywordDatabase.health);
+                additionalHashtags = additionalHashtags.concat(hashtagDatabase.health);
+            }
+            
+            if (productDesc.includes('finance') || productDesc.includes('money')) {
+                additionalKeywords = additionalKeywords.concat(keywordDatabase.finance);
+                additionalHashtags = additionalHashtags.concat(hashtagDatabase.finance);
+            }
+            
+            // Combine and dedupe
+            const allKeywords = [...new Set([...uniqueWords, ...additionalKeywords])].slice(0, 15);
+            const allHashtags = [...new Set(additionalHashtags)].slice(0, 10);
+            
+            // Display keywords
+            container.innerHTML += '<h4>Keywords</h4><div style="margin-bottom: 1rem;"></div>';
+            allKeywords.forEach(keyword => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.textContent = keyword;
+                tag.onclick = function() {
+                    const editor = document.getElementById('generatedContent');
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    
+                    // Check if editor has focus
+                    if (!editor.contains(document.activeElement)) {
+                        editor.focus();
+                    }
+                    
+                    // Insert at cursor position
+                    if (selection.rangeCount > 0) {
+                        range.setStart(selection.getRangeAt(0).endContainer, selection.getRangeAt(0).endOffset);
+                        range.insertNode(document.createTextNode(keyword + ' '));
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } else {
+                        // Or at end if no selection
+                        editor.textContent += ' ' + keyword;
+                    }
+                };
+                container.lastElementChild.appendChild(tag);
+            });
+            
+            // Display hashtags
+            container.innerHTML += '<h4 style="margin-top: 1.5rem;">Hashtags</h4><div></div>';
+            allHashtags.forEach(hashtag => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.textContent = hashtag;
+                tag.onclick = function() {
+                    const editor = document.getElementById('generatedContent');
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    
+                    if (!editor.contains(document.activeElement)) {
+                        editor.focus();
+                    }
+                    
+                    if (selection.rangeCount > 0) {
+                        range.setStart(selection.getRangeAt(0).endContainer, selection.getRangeAt(0).endOffset);
+                        range.insertNode(document.createTextNode(hashtag + ' '));
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } else {
+                        editor.textContent += ' ' + hashtag;
+                    }
+                };
+                container.lastElementChild.appendChild(tag);
+            });
+        }
+
+        // Copy to Clipboard
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const content = document.getElementById('finalContent').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const notification = document.getElementById('notification');
+                notification.textContent = 'Content copied to clipboard!';
+                notification.style.display = 'block';
+                notification.style.background = 'var(--success)';
+                
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            });
+        });
+
+        // Download as TXT
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const content = document.getElementById('finalContent').textContent;
+            const productName = document.getElementById('productName').value || 'content';
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${productName.toLowerCase().replace(/\s+/g, '-')}-content.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            const notification = document.getElementById('notification');
+            notification.textContent = 'Content downloaded!';
+            notification.style.display = 'block';
+            notification.style.background = 'var(--success)';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        });
+
+        // Load any saved preferences
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('productName')) {
+                document.getElementById('productName').value = localStorage.getItem('productName');
+            }
+            if (localStorage.getItem('productDesc')) {
+                document.getElementById('productDesc').value = localStorage.getItem('productDesc');
+            }
+            if (localStorage.getItem('targetAudience')) {
+                document.getElementById('targetAudience').value = localStorage.getItem('targetAudience');
+            }
+            if (localStorage.getItem('contentType')) {
+                document.getElementById('contentType').value = localStorage.getItem('contentType');
+            }
+            if (localStorage.getItem('tone')) {
+                document.getElementById('tone').value = localStorage.getItem('tone');
+            }
+            if (localStorage.getItem('keywords')) {
+                document.getElementById('keywords').value = localStorage.getItem('keywords');
+            }
+        });
+
+        // Save preferences when generating content
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            localStorage.setItem('productName', document.getElementById('productName').value);
+            localStorage.setItem('productDesc', document.getElementById('productDesc').value);
+            localStorage.setItem('targetAudience', document.getElementById('targetAudience').value);
+            localStorage.setItem('contentType', document.getElementById('contentType').value);
+            localStorage.setItem('tone', document.getElementById('tone').value);
+            localStorage.setItem('keywords', document.getElementById('keywords').value);
+        });
+    </script>
+</body>
+</html>
