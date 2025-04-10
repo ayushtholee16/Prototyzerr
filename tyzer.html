@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROTOTYZER Image Gallery</title>
+    <title>PROTOTYZER - TTS Tool</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
-    <!-- PROTOTYZER Head Content -->
-    <meta name="prototyzzer-version" content="1.0">
-    <meta name="prototyzzer-platform" content="web">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #6c5ce7;
@@ -21,6 +18,15 @@
             --card-bg: rgba(255, 255, 255, 0.96);
             --shadow: 0 10px 30px rgba(108, 92, 231, 0.12);
             --hover: rgba(108, 92, 231, 0.08);
+            --user-bubble: linear-gradient(135deg, var(--primary), var(--secondary));
+            --bot-bubble: var(--card-bg);
+            --typing-indicator: #dfe6e9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --error: #d63031;
+            --play: #00b894;
+            --pause: #fdcb6e;
+            --stop: #d63031;
         }
 
         * {
@@ -30,197 +36,1382 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-        }
-
         body {
             background-color: var(--bg);
             color: var(--text);
-            padding: 20px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
-        .grid-container {
-            columns: 5 250px;
-            column-gap: 15px;
-            width: 100%;
-            flex: 1;
-        }
-
-        .grid-item {
-            width: 100%;
-            margin-bottom: 15px;
-            break-inside: avoid;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: var(--card-bg);
+        header {
+            background: var(--card-bg);
             box-shadow: var(--shadow);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            position: relative;
-            -webkit-tap-highlight-color: transparent;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .grid-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.2);
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .grid-item img {
-            width: 100%;
-            display: block;
-            transition: opacity 0.3s;
-            aspect-ratio: attr(width) / attr(height);
-        }
-
-        .grid-item .image-info {
-            padding: 15px;
-            word-break: break-word;
-        }
-
-        .grid-item h3 {
-            font-size: clamp(14px, 3vw, 16px);
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-
-        .grid-item p {
-            font-size: clamp(12px, 2.5vw, 14px);
-            color: var(--text-light);
-        }
-
-        .grid-item .download-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            width: clamp(30px, 8vw, 36px);
-            height: clamp(30px, 8vw, 36px);
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--user-bubble);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            padding: 2rem;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .voice-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
             cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            font-size: clamp(12px, 3vw, 14px);
+            transition: all 0.2s ease;
+            margin-bottom: 0.5rem;
+            position: relative;
         }
 
-        .grid-item:active .download-btn,
-        .grid-item:focus .download-btn,
-        .grid-item:hover .download-btn {
-            opacity: 1;
+        .voice-option:hover {
+            background: var(--hover);
         }
 
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
+        .voice-option.active {
+            background: var(--hover);
+            border-left: 4px solid var(--primary);
         }
 
-        .spinner {
+        .voice-avatar {
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(108, 92, 231, 0.1);
             border-radius: 50%;
-            border-top: 4px solid var(--primary);
-            animation: spin 1s linear infinite;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .voice-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .voice-name {
+            font-weight: 500;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .voice-lang {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .voice-sample {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .voice-sample:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .voice-sample.playing {
+            background: var(--primary);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .settings-section {
+            margin-top: 2rem;
+        }
+
+        .setting-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .slider-container {
+            width: 100%;
+            position: relative;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider-value {
+            position: absolute;
+            top: -25px;
+            right: 0;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .select-box {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .select-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--hover);
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-width: 0;
+        }
+
+        .text-input-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-area {
+            flex: 1;
+            border: none;
+            resize: none;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text);
+            background: transparent;
+            outline: none;
+            padding: 0.5rem 0;
+        }
+
+        .text-area::placeholder {
+            color: var(--text-light);
+            opacity: 0.5;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .primary-btn {
+            background: var(--user-bubble);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .secondary-btn:hover {
+            background: var(--hover);
+        }
+
+        .char-count {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .output-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .output-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background: var(--hover);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .audio-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .play-btn {
+            background: var(--play);
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(0, 184, 148, 0.3);
+        }
+
+        .pause-btn {
+            background: var(--pause);
+        }
+
+        .pause-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(253, 203, 110, 0.3);
+        }
+
+        .stop-btn {
+            background: var(--stop);
+        }
+
+        .stop-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(214, 48, 49, 0.3);
+        }
+
+        .progress-container {
+            flex: 1;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            cursor: pointer;
+            min-width: 100px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .time-display {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .history-container {
+            margin-top: 2rem;
+        }
+
+        .history-item {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: var(--hover);
+        }
+
+        .history-text {
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .history-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .status-message {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(0, 184, 148, 0.2);
+        }
+
+        .error {
+            background: rgba(214, 48, 49, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(214, 48, 49, 0.2);
+        }
+
+        .warning {
+            background: rgba(253, 203, 110, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(253, 203, 110, 0.2);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(108, 92, 231, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* Enhanced Responsiveness */
-        @media (max-width: 1200px) {
-            .grid-container {
-                columns: 4 220px;
+        .no-support {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin: 2rem;
+        }
+
+        .no-support h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .no-support p {
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .try-anyway-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .try-anyway-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
             }
-        }
-
-        @media (max-width: 992px) {
-            .grid-container {
-                columns: 3 200px;
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                max-height: none;
             }
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
+            header {
+                padding: 1rem;
             }
-            .grid-container {
-                columns: 2 180px;
-                column-gap: 12px;
+            
+            .main-container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .text-input-container, .output-container {
+                padding: 1rem;
+            }
+            
+            .action-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .voice-option {
+                padding: 0.5rem;
             }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
             }
-            .grid-container {
-                columns: 1 1fr;
+            
+            .char-count {
+                order: -1;
             }
-            .grid-item {
-                margin-bottom: 10px;
-            }
-        }
-
-        /* Special adjustments for very small devices */
-        @media (max-width: 360px) {
-            .grid-item .image-info {
-                padding: 10px;
-            }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Touch device optimizations */
-        @media (hover: none) {
-            .grid-item .download-btn {
-                opacity: 1;
-                background-color: rgba(255, 255, 255, 0.7);
+            
+            .output-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
 </head>
 <body>
-    <div class="loading-spinner" id="loading-spinner">
-        <div class="spinner"></div>
+    <header>
+        <div class="logo">
+            <img src="logo.jpg" alt="Logo" class="logo-icon" style="width: 32px; height: 32px; border-radius: 8px;">
+            <div class="logo-text">PROTOTYZER</div>
+        </div>
+        <div>
+            <button class="secondary-btn" id="helpBtn">
+                <i class="fas fa-question-circle"></i>
+                Help
+            </button>
+        </div>
+    </header>
+
+    <div id="app">
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="voices-section">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-microphone-alt"></i>
+                        Voices
+                    </h3>
+                    
+                    <div class="voice-option active" data-voice="Google US English" data-lang="en-US">
+                        <div class="voice-avatar">JD</div>
+                        <div class="voice-info">
+                            <div class="voice-name">James Davis</div>
+                            <div class="voice-lang">English (US) • Standard</div>
+                        </div>
+                        <button class="voice-sample">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="voice-option" data-voice="Google UK English Female" data-lang="en-GB">
+                        <div class="voice-avatar">ES</div>
+                        <div class="voice-info">
+                            <div class="voice-name">Emma Smith</div>
+                            <div class="voice-lang">English (UK) • Warm</div>
+                        </div>
+                        <button class="voice-sample">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="voice-option" data-voice="Google 普通话 (中国大陆)" data-lang="zh-CN">
+                        <div class="voice-avatar">MC</div>
+                        <div class="voice-info">
+                            <div class="voice-name">Maria Chen</div>
+                            <div class="voice-lang">Chinese • Friendly</div>
+                        </div>
+                        <button class="voice-sample">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="voice-option" data-voice="Google العربية" data-lang="ar-SA">
+                        <div class="voice-avatar">AK</div>
+                        <div class="voice-info">
+                            <div class="voice-name">Ahmed Khan</div>
+                            <div class="voice-lang">Arabic • Authoritative</div>
+                        </div>
+                        <button class="voice-sample">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="voice-option" data-voice="Google français" data-lang="fr-FR">
+                        <div class="voice-avatar">SM</div>
+                        <div class="voice-info">
+                            <div class="voice-name">Sophie Martin</div>
+                            <div class="voice-lang">French • Elegant</div>
+                        </div>
+                        <button class="voice-sample">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </h3>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">Speed</label>
+                        <div class="slider-container">
+                            <span class="slider-value">1.0x</span>
+                            <input type="range" min="0.5" max="2" step="0.1" value="1" class="slider" id="speedSlider">
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">Pitch</label>
+                        <div class="slider-container">
+                            <span class="slider-value">1.0x</span>
+                            <input type="range" min="0.5" max="1.5" step="0.1" value="1" class="slider" id="pitchSlider">
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">Volume</label>
+                        <div class="slider-container">
+                            <span class="slider-value">100%</span>
+                            <input type="range" min="0" max="100" step="1" value="100" class="slider" id="volumeSlider">
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">Emotion</label>
+                        <select class="select-box" id="emotionSelect">
+                            <option value="neutral">Neutral</option>
+                            <option value="happy">Happy</option>
+                            <option value="sad">Sad</option>
+                            <option value="angry">Angry</option>
+                            <option value="excited">Excited</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="text-input-container">
+                    <textarea class="text-area" placeholder="Type or paste your text here..." id="textInput"></textarea>
+                    <div class="controls">
+                        <div class="char-count">0 characters</div>
+                        <div>
+                            <button class="secondary-btn" id="clearBtn">
+                                <i class="fas fa-trash-alt"></i>
+                                Clear
+                            </button>
+                            <button class="primary-btn" id="speakBtn">
+                                <i class="fas fa-microphone-alt"></i>
+                                Speak
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="output-container">
+                    <div class="output-header">
+                        <h3 class="output-title">
+                            <i class="fas fa-headphones"></i>
+                            Output
+                        </h3>
+                        <button class="download-btn" id="downloadBtn" disabled>
+                            <i class="fas fa-download"></i>
+                            Download MP3
+                        </button>
+                    </div>
+                    
+                    <div class="audio-controls">
+                        <button class="audio-btn play-btn" id="playBtn" disabled>
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="audio-btn pause-btn" id="pauseBtn" disabled>
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="audio-btn stop-btn" id="stopBtn" disabled>
+                            <i class="fas fa-stop"></i>
+                        </button>
+                        <div class="progress-container" id="progressContainer">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
+                    </div>
+                    
+                    <div id="statusMessage" style="display: none;"></div>
+                    
+                    <div class="history-container">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-history"></i>
+                            History
+                        </h3>
+                        
+                        <div id="historyList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="grid-container" id="image-grid">
-        <!-- Images will be loaded here dynamically -->
+    <div id="unsupported" class="no-support" style="display: none;">
+        <h2>Browser Not Supported</h2>
+        <p>Your browser doesn't support the Web Speech API which is required for this tool to work.</p>
+        <p>Please try using Chrome, Edge, or Safari for the best experience.</p>
+        <button class="try-anyway-btn" id="tryAnywayBtn">Try Anyway</button>
     </div>
 
-    <script src="tyzer.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for Web Speech API support
+            if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('unsupported').style.display = 'block';
+                return;
+            }
+
+            // DOM Elements
+            const textInput = document.getElementById('textInput');
+            const speakBtn = document.getElementById('speakBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const playBtn = document.getElementById('playBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const statusMessage = document.getElementById('statusMessage');
+            const charCount = document.querySelector('.char-count');
+            const voiceOptions = document.querySelectorAll('.voice-option');
+            const speedSlider = document.getElementById('speedSlider');
+            const pitchSlider = document.getElementById('pitchSlider');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const emotionSelect = document.getElementById('emotionSelect');
+            const historyList = document.getElementById('historyList');
+            const helpBtn = document.getElementById('helpBtn');
+            const tryAnywayBtn = document.getElementById('tryAnywayBtn');
+
+            // Speech synthesis variables
+            let synth = window.speechSynthesis;
+            let utterance = null;
+            let voices = [];
+            let isPlaying = false;
+            let currentVoice = null;
+            let audioChunks = [];
+            let mediaRecorder = null;
+            let audioContext = null;
+            let audioStream = null;
+            let startTime = 0;
+            let animationFrameId = null;
+            let history = JSON.parse(localStorage.getItem('ttsHistory')) || [];
+
+            // Voice settings
+            let speed = 1;
+            let pitch = 1;
+            let volume = 1;
+            let emotion = 'neutral';
+
+            // Initialize the app
+            function init() {
+                loadVoices();
+                setupEventListeners();
+                renderHistory();
+                updateCharCount();
+
+                // Check if voices are already loaded
+                if (synth.getVoices().length > 0) {
+                    voices = synth.getVoices();
+                    setupVoiceOptions();
+                }
+
+                // Show welcome message
+                showStatus('Welcome to Voxify Pro! Type your text and click Speak to generate speech.', 'success');
+            }
+
+            // Load available voices
+            function loadVoices() {
+                voices = synth.getVoices();
+                
+                // Some browsers need this event to load voices
+                synth.onvoiceschanged = function() {
+                    voices = synth.getVoices();
+                    setupVoiceOptions();
+                };
+                
+                setupVoiceOptions();
+            }
+
+            // Setup voice options based on available voices
+            function setupVoiceOptions() {
+                voiceOptions.forEach(option => {
+                    const voiceName = option.dataset.voice;
+                    const lang = option.dataset.lang;
+                    const voice = voices.find(v => v.name === voiceName && v.lang === lang);
+                    
+                    if (!voice) {
+                        option.style.display = 'none';
+                    } else {
+                        option.style.display = 'flex';
+                    }
+                });
+            }
+
+            // Set up all event listeners
+            function setupEventListeners() {
+                // Text input
+                textInput.addEventListener('input', updateCharCount);
+                
+                // Clear button
+                clearBtn.addEventListener('click', clearText);
+                
+                // Speak button
+                speakBtn.addEventListener('click', speakText);
+                
+                // Voice selection
+                voiceOptions.forEach(option => {
+                    option.addEventListener('click', selectVoice);
+                    
+                    // Play sample
+                    const sampleBtn = option.querySelector('.voice-sample');
+                    sampleBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        playSample(option);
+                    });
+                });
+                
+                // Settings controls
+                speedSlider.addEventListener('input', updateSpeed);
+                pitchSlider.addEventListener('input', updatePitch);
+                volumeSlider.addEventListener('input', updateVolume);
+                emotionSelect.addEventListener('change', updateEmotion);
+                
+                // Audio controls
+                playBtn.addEventListener('click', playAudio);
+                pauseBtn.addEventListener('click', pauseAudio);
+                stopBtn.addEventListener('click', stopAudio);
+                progressContainer.addEventListener('click', seekAudio);
+                
+                // Download button
+                downloadBtn.addEventListener('click', downloadAudio);
+                
+                // Help button
+                helpBtn.addEventListener('click', showHelp);
+                
+                // Try anyway button
+                if (tryAnywayBtn) {
+                    tryAnywayBtn.addEventListener('click', function() {
+                        document.getElementById('app').style.display = 'flex';
+                        document.getElementById('unsupported').style.display = 'none';
+                        init();
+                    });
+                }
+                
+                // Handle speech synthesis events
+                synth.onboundary = function(event) {
+                    // Can be used for word highlighting
+                };
+            }
+
+            // Update character count
+            function updateCharCount() {
+                const count = textInput.value.length;
+                charCount.textContent = `${count} characters`;
+                
+                if (count > 5000) {
+                    charCount.style.color = 'var(--error)';
+                    speakBtn.disabled = true;
+                } else {
+                    charCount.style.color = 'var(--text-light)';
+                    speakBtn.disabled = false;
+                }
+            }
+
+            // Clear text
+            function clearText() {
+                textInput.value = '';
+                updateCharCount();
+                stopAudio();
+            }
+
+            // Select voice
+            function selectVoice() {
+                voiceOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                const voiceName = this.dataset.voice;
+                const lang = this.dataset.lang;
+                currentVoice = voices.find(v => v.name === voiceName && v.lang === lang);
+                
+                showStatus(`Voice changed to ${this.querySelector('.voice-name').textContent}`, 'success');
+            }
+
+            // Play voice sample
+            function playSample(option) {
+                if (isPlaying) {
+                    stopAudio();
+                    return;
+                }
+                
+                const sampleBtn = option.querySelector('.voice-sample');
+                const wasActive = option.classList.contains('active');
+                
+                if (!wasActive) {
+                    voiceOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    selectVoice.call(option);
+                }
+                
+                sampleBtn.classList.add('playing');
+                
+                const sampleTexts = {
+                    'en-US': 'Hello, this is a sample of my voice.',
+                    'en-GB': 'Hello, this is a sample of my British accent.',
+                    'zh-CN': '你好，这是我的声音样本。',
+                    'ar-SA': 'مرحبًا ، هذه عينة من صوتي.',
+                    'fr-FR': 'Bonjour, ceci est un échantillon de ma voix.'
+                };
+                
+                const lang = option.dataset.lang;
+                const sampleText = sampleTexts[lang] || sampleTexts['en-US'];
+                
+                speak(sampleText, true);
+            }
+
+            // Speak text
+            function speakText() {
+                const text = textInput.value.trim();
+                
+                if (!text) {
+                    showStatus('Please enter some text to convert to speech.', 'error');
+                    return;
+                }
+                
+                if (text.length > 5000) {
+                    showStatus('Text is too long. Maximum 5000 characters.', 'error');
+                    return;
+                }
+                
+                if (!currentVoice) {
+                    showStatus('Please select a voice first.', 'error');
+                    return;
+                }
+                
+                speak(text);
+                addToHistory(text);
+            }
+
+            // Core speak function
+            function speak(text, isSample = false) {
+                stopAudio();
+                
+                utterance = new SpeechSynthesisUtterance(text);
+                utterance.voice = currentVoice;
+                utterance.rate = speed;
+                utterance.pitch = pitch;
+                utterance.volume = volume;
+                
+                // Apply emotion through rate and pitch
+                switch(emotion) {
+                    case 'happy':
+                        utterance.rate *= 1.2;
+                        utterance.pitch *= 1.1;
+                        break;
+                    case 'sad':
+                        utterance.rate *= 0.8;
+                        utterance.pitch *= 0.9;
+                        break;
+                    case 'angry':
+                        utterance.rate *= 1.1;
+                        utterance.pitch *= 0.95;
+                        break;
+                    case 'excited':
+                        utterance.rate *= 1.3;
+                        utterance.pitch *= 1.2;
+                        break;
+                }
+                
+                // Set up event listeners for the utterance
+                utterance.onstart = function() {
+                    isPlaying = true;
+                    startTime = Date.now();
+                    
+                    if (isSample) {
+                        const sampleBtn = document.querySelector('.voice-sample.playing');
+                        if (sampleBtn) {
+                            sampleBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                        }
+                    } else {
+                        playBtn.disabled = true;
+                        pauseBtn.disabled = false;
+                        stopBtn.disabled = false;
+                    }
+                    
+                    updateTimeDisplay();
+                    animateProgress();
+                };
+                
+                utterance.onend = function() {
+                    isPlaying = false;
+                    
+                    if (isSample) {
+                        const sampleBtn = document.querySelector('.voice-sample.playing');
+                        if (sampleBtn) {
+                            sampleBtn.classList.remove('playing');
+                            sampleBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        }
+                    } else {
+                        playBtn.disabled = false;
+                        pauseBtn.disabled = true;
+                        stopBtn.disabled = true;
+                    }
+                    
+                    cancelAnimationFrame(animationFrameId);
+                    
+                    if (!isSample) {
+                        showStatus('Speech generation completed!', 'success');
+                        downloadBtn.disabled = false;
+                    }
+                };
+                
+                utterance.onerror = function(event) {
+                    isPlaying = false;
+                    showStatus('Error generating speech: ' + event.error, 'error');
+                    
+                    if (isSample) {
+                        const sampleBtn = document.querySelector('.voice-sample.playing');
+                        if (sampleBtn) {
+                            sampleBtn.classList.remove('playing');
+                            sampleBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        }
+                    }
+                };
+                
+                synth.speak(utterance);
+            }
+
+            // Play audio
+            function playAudio() {
+                if (synth.paused) {
+                    synth.resume();
+                    playBtn.disabled = true;
+                    pauseBtn.disabled = false;
+                    stopBtn.disabled = false;
+                    animateProgress();
+                } else if (!isPlaying) {
+                    speak(textInput.value.trim());
+                }
+            }
+
+            // Pause audio
+            function pauseAudio() {
+                if (isPlaying) {
+                    synth.pause();
+                    playBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    cancelAnimationFrame(animationFrameId);
+                }
+            }
+
+            // Stop audio
+            function stopAudio() {
+                synth.cancel();
+                isPlaying = false;
+                playBtn.disabled = false;
+                pauseBtn.disabled = true;
+                stopBtn.disabled = true;
+                progressBar.style.width = '0%';
+                timeDisplay.textContent = '00:00 / 00:00';
+                cancelAnimationFrame(animationFrameId);
+                
+                // Reset sample buttons
+                document.querySelectorAll('.voice-sample.playing').forEach(btn => {
+                    btn.classList.remove('playing');
+                    btn.innerHTML = '<i class="fas fa-play"></i>';
+                });
+            }
+
+            // Seek audio
+            function seekAudio(e) {
+                if (!utterance || !isPlaying) return;
+                
+                const rect = progressContainer.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                const duration = utterance.text.length / (utterance.rate * 10); // Approximate duration in seconds
+                const newTime = pos * duration;
+                
+                                // SpeechSynthesis API doesn't support seeking directly, so we need to
+                // stop the current speech and start a new one from the desired position
+                const text = utterance.text;
+                const charsPerSec = text.length / duration;
+                const startChar = Math.floor(newTime * charsPerSec);
+                
+                if (startChar >= text.length) return;
+                
+                synth.cancel();
+                speak(text.substring(startChar));
+            }
+
+            // Animate progress bar
+            function animateProgress() {
+                if (!isPlaying) return;
+                
+                const elapsed = (Date.now() - startTime) / 1000; // in seconds
+                const duration = utterance.text.length / (utterance.rate * 10); // Approximate duration
+                const progress = Math.min(elapsed / duration, 1);
+                
+                progressBar.style.width = `${progress * 100}%`;
+                
+                // Update time display
+                const currentTime = formatTime(elapsed);
+                const totalTime = formatTime(duration);
+                timeDisplay.textContent = `${currentTime} / ${totalTime}`;
+                
+                if (progress < 1) {
+                    animationFrameId = requestAnimationFrame(animateProgress);
+                }
+            }
+
+            // Format time as MM:SS
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            // Update speed setting
+            function updateSpeed() {
+                speed = parseFloat(speedSlider.value);
+                document.querySelector('#speedSlider + .slider-value').textContent = `${speed.toFixed(1)}x`;
+                
+                if (isPlaying) {
+                    synth.cancel();
+                    speak(textInput.value.trim());
+                }
+            }
+
+            // Update pitch setting
+            function updatePitch() {
+                pitch = parseFloat(pitchSlider.value);
+                document.querySelector('#pitchSlider + .slider-value').textContent = `${pitch.toFixed(1)}x`;
+                
+                if (isPlaying) {
+                    synth.cancel();
+                    speak(textInput.value.trim());
+                }
+            }
+
+            // Update volume setting
+            function updateVolume() {
+                volume = parseInt(volumeSlider.value) / 100;
+                document.querySelector('#volumeSlider + .slider-value').textContent = `${volumeSlider.value}%`;
+                
+                if (isPlaying && utterance) {
+                    utterance.volume = volume;
+                }
+            }
+
+            // Update emotion setting
+            function updateEmotion() {
+                emotion = emotionSelect.value;
+                
+                if (isPlaying) {
+                    synth.cancel();
+                    speak(textInput.value.trim());
+                }
+            }
+
+            // Download audio (simulated since Web Speech API doesn't support direct audio export)
+            function downloadAudio() {
+                if (!utterance) return;
+                
+                showStatus('Preparing download...', 'warning');
+                
+                // In a real implementation, you would use a TTS API that supports audio export
+                // This is just a simulation for the UI
+                setTimeout(() => {
+                    showStatus('Download started! (simulated)', 'success');
+                    
+                    // Create a dummy download link
+                    const blob = new Blob([utterance.text], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `voxify-${new Date().toISOString().slice(0, 10)}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 1500);
+            }
+
+            // Add text to history
+            function addToHistory(text) {
+                const timestamp = new Date().toISOString();
+                history.unshift({ text, timestamp });
+                
+                // Keep only the last 20 items
+                if (history.length > 20) {
+                    history.pop();
+                }
+                
+                localStorage.setItem('ttsHistory', JSON.stringify(history));
+                renderHistory();
+            }
+
+            // Render history list
+            function renderHistory() {
+                historyList.innerHTML = '';
+                
+                if (history.length === 0) {
+                    historyList.innerHTML = '<p style="color: var(--text-light); font-size: 0.9rem; text-align: center;">No history yet</p>';
+                    return;
+                }
+                
+                history.forEach((item, index) => {
+                    const el = document.createElement('div');
+                    el.className = 'history-item';
+                    el.dataset.index = index;
+                    
+                    const date = new Date(item.timestamp);
+                    const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const dateString = date.toLocaleDateString();
+                    
+                    el.innerHTML = `
+                        <div class="history-text">${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
+                        <div class="history-meta">
+                            <span>${timeString} • ${dateString}</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    `;
+                    
+                    el.addEventListener('click', () => {
+                        textInput.value = item.text;
+                        updateCharCount();
+                        showStatus('Text loaded from history', 'success');
+                    });
+                    
+                    historyList.appendChild(el);
+                });
+            }
+
+            // Show status message
+            function showStatus(message, type) {
+                statusMessage.style.display = 'block';
+                statusMessage.className = `status-message ${type}`;
+                statusMessage.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                `;
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+
+            // Show help information
+            function showHelp() {
+                const helpText = `
+                    <h3>Voxify Pro Help</h3>
+                    <p><strong>How to use:</strong></p>
+                    <ol>
+                        <li>Type or paste your text in the input box (max 5000 characters)</li>
+                        <li>Select a voice from the sidebar</li>
+                        <li>Adjust speed, pitch, volume and emotion as needed</li>
+                        <li>Click "Speak" to generate the audio</li>
+                        <li>Use the playback controls to play, pause or stop</li>
+                        <li>Click "Download" to save the audio (simulated in this demo)</li>
+                    </ol>
+                    <p><strong>Note:</strong> This demo uses the Web Speech API which has limited voices and features. For production use, consider a professional TTS API.</p>
+                `;
+                
+                showStatus(helpText, 'success');
+                
+                // Make the status message stay longer for help
+                clearTimeout(statusMessage.timeout);
+                statusMessage.timeout = setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 15000);
+            }
+
+            // Initialize the app
+            init();
+        });
+    </script>
 </body>
-</html>
+                            </html>
